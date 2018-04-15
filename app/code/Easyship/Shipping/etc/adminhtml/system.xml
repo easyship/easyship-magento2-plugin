@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="easyship_shipping" translate="label" sortOrder="200">
+            <label>Easyship</label>
+        </tab>
+
+        <section id="easyship_options" translate="label" sortOrder="1000" showInDefault="1" showInWebsite="1"
+                 showInStore="1">
+            <class>separator-top</class>
+            <label>Easyship Settings</label>
+            <tab>easyship_shipping</tab>
+            <resource>Easyship_Shipping::config</resource>
+
+            <group id="es_group" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Easyship</label>
+
+                <field id="es_shipping" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Easyship</label>
+                    <frontend_model>Easyship\Shipping\Block\Admin\Config\Connect</frontend_model>
+                </field>
+                <!-- SERVICE SETTINGS -->
+                <field id="token" type="hidden" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1"/>
+
+                <field id="rate_enable" type="hidden" sortOrder="30" showInDefault="1" showInWebsite="1"
+                       showInStore="1"/>
+                <!-- SERVICE SETTINGS END -->
+            </group>
+        </section>
+    </system>
+</config>

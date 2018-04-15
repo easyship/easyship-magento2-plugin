@@ -1,0 +1,75 @@
+<div id="easyship_<?php echo $this->getElementId() ?>">
+    <div class="flex-container storebackground">
+        <div class="statuscontainer">
+            <div class="storename">
+                <?php echo __('Store Name') ?>:
+                <strong><?php echo $this->getStore(); ?></strong>
+            </div>
+            <div class="statusLabel">
+                <?php echo __('Plugin Status') ?>:
+                <?php if ($this->getActived()) : ?>
+                    <span class="status active"><?php echo __('activated') ?></span>
+                <?php else : ?>
+                    <span class="status deactive"><?php echo __('disabled') ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="buttoncontainer">
+            <?php if (!$this->getActived()) : ?>
+                <button type="button" class="activatebutton" onclick="postRegistration('<?php echo $this->getStoreUrl() ?>', <?php echo $this->getStoreId() ?>);">
+                    <?php echo __('ACTIVATE PLUGIN') ?>
+                </button>
+            <?php else : ?>
+                <button type="button" class="resetbutton" onclick="resetStore('<?php echo $this->getResetStoreUrl() ?>', <?php echo $this->getStoreId() ?>);">
+                    <?php echo __('RESET STORE SETTINGS') ?>
+                </button>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        window.postRegistration = function (url, storeId) {
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {store_id: storeId},
+                success: function (response) {
+                    if(response.error) {
+                        $('body').notification('clear')
+                            .notification('add', {
+                                error: true,
+                                message: $.mage.__(response.error),
+
+                                insertMethod: function (message) {
+                                    var $wrapper = $('<div/>').html(message);
+
+                                    $('.page-main-actions').after($wrapper);
+                                }
+                            });
+                    } else {
+                        window.open(response.redirect_url, "_self");
+                    }
+                }
+            });
+        };
+
+        window.resetStore = function (url, storeId) {
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {store_id: storeId},
+                success: function (response) {
+                    location.reload();
+                },
+                fail: function () {
+                    alert("Error: Fail to reset store. Please try again.");
+                }
+            });
+        }
+    });
+</script>
