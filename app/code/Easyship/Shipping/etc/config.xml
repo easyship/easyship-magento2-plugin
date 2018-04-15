@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <easyship>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Easyship\Shipping\Model\EasyshipCarrier</model>
+                <name>easyship</name>
+                <title>Easyship Shipping</title>
+                <type>1</type>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.
+                </specificerrmsg>
+            </easyship>
+        </carriers>
+    </default>
+</config>
