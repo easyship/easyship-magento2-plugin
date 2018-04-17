@@ -50,7 +50,6 @@ class ShipOrder implements \Easyship\Shipping\Api\ShipOrderInterface
         $comment = ''
     )
     {
-        //$order = $this->_order->getItemById($orderId);
         $order = $this->_orderRepository->get($orderId);
 
         if (!$order->canShip()) {

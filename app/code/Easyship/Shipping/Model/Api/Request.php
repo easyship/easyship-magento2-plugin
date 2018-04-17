@@ -83,7 +83,7 @@ class Request
      */
     public function getQuotes($requestBody)
     {
-        $endpoint = self::BASE_ENDPOINT . 'rate/v1/magento';
+        $endpoint = self::BASE_ENDPOINT . 'rate/v1/rates';
         $result = $this->_doRequest($endpoint,$requestBody->getData(),null, true);
         return $result;
     }
@@ -136,7 +136,7 @@ class Request
         $this->_token = $this->_scopeConfig->getValue(self::BASE_SETTINGS_PATH . 'token',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-        $this->_token = '***REMOVED-COMPROMISED-TOKEN-OI-992***';
+        $this->_token = 'stag_SDP4MmT1ZuEShnU/FEUvIUVxrPjmTCJjJfTU0Erjr6M=';
     }
 
     /**

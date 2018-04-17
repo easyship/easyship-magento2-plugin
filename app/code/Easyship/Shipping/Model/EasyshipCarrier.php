@@ -14,16 +14,23 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     protected $_easyshipApi;
     protected $_countryFactory;
     protected $_storeManager;
+    protected $storeId;
 
     protected $_rateResultFactory;
     protected $_rateMethodFactory;
+    protected $_statusFactory;
+    protected $_trackFactory;
+    protected $_trackCollectionFactory;
 
     public function __construct
     (
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackingResultFactory,
+        \Magento\Shipping\Model\Tracking\Result\StatusFactory $statusFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+        \Magento\Sales\Model\ResourceModel\Order\Shipment\Track\CollectionFactory $trackCollectionFactory,
         \Psr\Log\LoggerInterface $logger,
         \Easyship\Shipping\Model\Api\Request $easyshipApi,
         \Magento\Directory\Model\CountryFactory $countryFactory,
@@ -36,6 +43,11 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         $this->_storeManager = $storeManager;
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
+        $this->_statusFactory = $statusFactory;
+        $this->_trackFactory = $trackingResultFactory;
+        $this->_trackCollectionFactory = $trackCollectionFactory;
+
+        $this->storeId = $this->_storeManager->getStore()->getId();
 
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
@@ -49,20 +61,66 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         return null;
     }
 
-    protected function getActivate(RateRequest $request)
+    public function isTrackingAvailable()
     {
-        $storeId = $request->getStoreId();
-        return $this->_scopeConfig->getValue('easyship_options/ec_shipping/rate_enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+        return true;
+    }
+
+    public function getTrackingInfo($tracking)
+    {
+        $result = $this->getTracking($tracking);
+
+        if ($result instanceof \Magento\Shipping\Model\Tracking\Result) {
+            $trackings = $result->getAllTrackings();
+            if ($trackings) {
+                return $trackings[0];
+            }
+        } elseif (is_string($result) && !empty($result)) {
+            return $result;
+        }
+
+        return false;
+    }
+
+    protected function findByNumber(array $trackings)
+    {
+        $elements = $this->_trackCollectionFactory->create()->addFieldToFilter('track_number',['in' => $trackings]);
+        $result = [];
+        foreach ($elements as $item) {
+            $result[$item['track_number']] = $item;
+        }
+        return $result;
+    }
+
+
+    public function getTracking($trackings)
+    {
+        if (!is_array($trackings)) {
+            $trackings = [$trackings];
+        }
+
+        $result = $this->_trackFactory->create();
+        $trackings_data = $this->findByNumber($trackings);
+        foreach ($trackings as $tracking) {
+            $status = $this->_statusFactory->create();
+            $status->setCarrier($this->_code);
+            $status->setCarrierTitle($this->getConfigData('title'));
+            $status->setTracking($tracking);
+            $status->setPopup(1);
+            if (isset($trackings_data[$tracking]['tracking_page_url'])) {
+                $status->setTrackingPageUrl($trackings_data[$tracking]['tracking_page_url']);
+            }
+            $result->append($status);
+        }
+
+        return $result;
     }
 
     public function collectRates(RateRequest $request)
     {
-//        if (!$this->getConfigFlag('active') || !$this->getActivate($request)) {
-//            return false;
-//        }
+        if (!$this->getConfigFlag('active')) {
+            return false;
+        }
 
         $this->_createEasyShipRequest($request);
 
@@ -87,7 +145,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
                 $request->getStoreId());
         }
 
-        $r->setOriginCountryAlpha2($this->_countryFactory->create()->load($origCountry)->getIso2Code());
+        $r->setData('origin_country_alpha2', $this->_countryFactory->create()->load($origCountry)->getData('iso2_code'));
 
         if ($request->getOrigPostcode()) {
             $r->setOriginPostalCode($request->getOrigPostcode());
@@ -105,27 +163,29 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
             $destCountry = 'US';
         }
 
-        $r->setDestinationCountryAlpha2($this->_countryFactory->create()->load($destCountry)->getIso2Code());
+        $r->setData('destination_country_alpha2', $this->_countryFactory->create()->load($destCountry)->getData('iso2_code'));
 
-        if ( $request->getDestPostcode() ) {
-            $r->setDestinationPostalCode( $request->getDestPostcode() );
+        if ($request->getDestPostcode()) {
+            $r->setDestinationPostalCode($request->getDestPostcode());
         }
 
-        $r->setOutputCurrency($currencyCode);
-
         $items = array();
-        if ( $request->getAllItems() ) {
+        if ($request->getAllItems()) {
             foreach ($request->getAllItems() as $item) {
-                if ($item->getProduct()->isVirtual() || $item->getParentItem() ) {
+                if ($item->getProduct()->isVirtual() || $item->getParentItem()) {
                     continue;
                 }
 
                 for ($i = 0; $i < $item->getQty(); $i++) {
                     $items[] = array(
-                        'actual_weight' =>  $item->getWeight(),
+                        'actual_weight' => $this->getWeight($item),
+                        'height' => $this->getEasyshipHeight($item),
+                        'width' => $this->getEasyshipWidth($item),
+                        'length' => $this->getEasyshipLength($item),
+                        'category' => $this->getEasyshipCategory($item),
                         'declared_currency' => $currencyCode,
-                        'declared_customs_value' =>  (float) $item->getPrice(),
-                        'sku' =>  $item->getSku()
+                        'declared_customs_value' => (float)$item->getPrice(),
+                        'sku' => $item->getSku()
                     );
                 }
             }
@@ -135,6 +195,107 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
 
         $this->_rawRequest = $r;
 
+    }
+
+    /**
+     * @param $item
+     * @return int
+     */
+    protected function getWeight($item)
+    {
+        if ($item->hasWeight() && !empty($item->getWeight())) {
+            return (int)$item->getEasyshipCategory();
+        }
+
+        return 1;
+    }
+
+    /**
+     * @param $item
+     * @return string
+     */
+    protected function getEasyshipCategory($item)
+    {
+        if ($item->hasEasyshipCategory() && !empty($item->getEasyshipCategory())) {
+            return $item->getEasyshipCategory();
+        }
+
+        $base_category = $this->_scopeConfig->getValue('carriers/easyship/base_category',
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->storeId
+        );
+
+        if (empty($base_category)) {
+            return '';
+        }
+
+        return $base_category;
+    }
+
+    /**
+     * @param $item
+     * @return int
+     */
+    protected function getEasyshipHeight($item)
+    {
+        if ($item->hasEasyshipHeight() && !empty($item->getEasyshipHeight())) {
+            return (int)$item->getEasyshipHeight();
+        }
+
+        $base_height = $this->_scopeConfig->getValue('carriers/easyship/base_height',
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->storeId
+        );
+
+        if (empty($base_height)) {
+            return 0;
+        }
+
+        return (int)$base_height;
+    }
+
+    /**
+     * @param $item
+     * @return int
+     */
+    protected function getEasyshipWidth($item)
+    {
+        if ($item->hasEasyshipWidth() && !empty($item->getEasyshipWidth())) {
+            return (int)$item->getEasyshipWidth();
+        }
+
+        $base_width = $this->_scopeConfig->getValue('carriers/easyship/base_width',
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->storeId
+        );
+
+        if (empty($base_width)) {
+            return 0;
+        }
+
+        return (int)$base_width;
+    }
+
+    /**
+     * @param $item
+     * @return int
+     */
+    protected function getEasyshipLength($item)
+    {
+        if ($item->hasEasyshipLength() && !empty($item->getEasyshipLength())) {
+            return (int)$item->getEasyshipLength();
+        }
+
+        $base_length = $this->_scopeConfig->getValue('carriers/easyship/base_length',
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->storeId
+        );
+
+        if (empty($base_length)) {
+            return 0;
+        }
+
+        return (int)$base_length;
     }
 
 
@@ -158,7 +319,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($this->getConfigData('title'));
             $method->setMethod($rate['courier_id']);
-            $method->setMethodTitle($rate['full_description']);
+            $method->setMethodTitle($rate['courier_name']);
             $method->setCost($rate['total_charge']);
             $method->setPrice($rate['total_charge']);
             $result->append($method);

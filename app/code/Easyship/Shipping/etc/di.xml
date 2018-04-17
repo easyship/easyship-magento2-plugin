@@ -3,7 +3,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Easyship\Shipping\Api\RegisterInterface" type="Easyship\Shipping\Model\Register"/>
     <preference for="Easyship\Shipping\Api\ShipOrderInterface" type="Easyship\Shipping\Model\ShipOrder"/>
-    <preference for="Magento\Ups\Model\Carrier" type="Easyship\Shipping\Model\Carrier" />
 
     <type name="Easyship\Shipping\Model\Logger\Handler">
         <arguments>
