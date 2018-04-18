@@ -1,5 +1,28 @@
 <?xml version="1.0" ?>
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd" layout="1column">
+<!--
+/**
+    * Easyship.
+    *
+    * NOTICE OF LICENSE
+    *
+    * This source file is subject to the Easyship.com license that is
+    * available through the world-wide-web at this URL:
+    * https://www.easyship.com/license-agreement.html
+    *
+    * DISCLAIMER
+    *
+    * Do not edit or add to this file if you wish to upgrade this extension to newer
+    * version in the future.
+    *
+    * @category    Easyship
+    * @package     Easyship_Shipping
+    * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+    * @license     https://www.easyship.com/license-agreement.html
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd"
+      layout="1column">
     <head>
         <css src="Easyship_Shipping::css/easyship.css"/>
     </head>

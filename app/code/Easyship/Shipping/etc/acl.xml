@@ -20,13 +20,13 @@
  * @license     https://www.easyship.com/license-agreement.html
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="empty"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <referenceBlock name="shipping.tracking.popup">
-            <action method="setTemplate">
-                <argument name="template" xsi:type="string">Easyship_Shipping::tracking/popup.phtml</argument>
-            </action>
-        </referenceBlock>
-    </body>
-</page>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Easyship_Shipping::easyship" title="Easyship" translate="title" sortOrder="10" />
+            </resource>
+        </resources>
+    </acl>
+</config>

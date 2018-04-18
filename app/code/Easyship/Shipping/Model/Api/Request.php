@@ -1,4 +1,23 @@
 <?php
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
 
 namespace Easyship\Shipping\Model\Api;
 
@@ -19,14 +38,13 @@ class Request
 
     protected $logger;
 
-    public function __construct
-    (
+    public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Config\Model\ResourceModel\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Easyship\Shipping\Model\Logger\Logger $logger
-    )
-    {
+    ) {
+    
         $this->_scopeConfig = $scopeConfig;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
@@ -51,40 +69,14 @@ class Request
     }
 
     /**
-     * Enable or disable rate mode
-     * @param bool $enable
-     * @return bool
-     */
-    public function changeRateRequest($enable)
-    {
-        $endpoint = self::BASE_ENDPOINT . '/store/v1/stores';
-        $requestBody = [];
-        $requestBody['store'] = [];
-        $requestBody['store']['is_rates_enabled'] = $enable;
-
-        $result = $this->_doRequest($endpoint, $requestBody, null, true, 'PUT');
-
-        if ($result === false) {
-            return false;
-        }
-
-        $this->_config->saveConfig(self::BASE_SETTINGS_PATH . 'rate_enable',
-            $enable,
-            'default',
-            $this->_storeManager->getStore()->getId()
-        );
-
-        return true;
-    }
-
-    /**
+     * Return rates
      * @param $requestBody
      * @return bool|mixed
      */
     public function getQuotes($requestBody)
     {
         $endpoint = self::BASE_ENDPOINT . 'rate/v1/rates';
-        $result = $this->_doRequest($endpoint,$requestBody->getData(),null, true);
+        $result = $this->_doRequest($endpoint, $requestBody->getData(), null, true);
         return $result;
     }
 
@@ -133,10 +125,10 @@ class Request
      */
     protected function refreshTokenField()
     {
-        $this->_token = $this->_scopeConfig->getValue(self::BASE_SETTINGS_PATH . 'token',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-        $this->_token = 'stag_SDP4MmT1ZuEShnU/FEUvIUVxrPjmTCJjJfTU0Erjr6M=';
+        $this->_token = $this->_scopeConfig->getValue(
+            self::BASE_SETTINGS_PATH . 'token',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -150,9 +142,9 @@ class Request
 
         $this->logger->info($endpoint . " : " . $status);
         if (is_array($response)) {
-            $this->logger->info(print_r($response, true));
-        } elseif(!empty($response)) {
-            $this->logger->info($response, true);
+            $this->logger->info(json_encode($response));
+        } elseif (!empty($response)) {
+            $this->logger->info($response);
         }
     }
 }

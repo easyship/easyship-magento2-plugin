@@ -1,5 +1,28 @@
 <?xml version="1.0"?>
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+<!--
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <route url="/V1/easyship/token" method="POST">
         <service class="Easyship\Shipping\Api\RegisterInterface" method="saveToken"/>
         <resources>
@@ -10,7 +33,7 @@
     <route url="/V1/easyship/ship" method="POST">
         <service class="Easyship\Shipping\Api\ShipOrderInterface" method="execute"/>
         <resources>
-            <resource ref="Magento_Shipping::carriers" />
+            <resource ref="Magento_Shipping::carriers"/>
         </resources>
     </route>
 </routes>
