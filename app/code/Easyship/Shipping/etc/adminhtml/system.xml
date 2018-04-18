@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
+-->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
@@ -23,12 +44,6 @@
                     <label>Easyship</label>
                     <frontend_model>Easyship\Shipping\Block\Admin\Config\Connect</frontend_model>
                 </field>
-                <!-- SERVICE SETTINGS -->
-                <field id="token" type="hidden" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1"/>
-
-                <field id="rate_enable" type="hidden" sortOrder="30" showInDefault="1" showInWebsite="1"
-                       showInStore="1"/>
-                <!-- SERVICE SETTINGS END -->
             </group>
         </section>
 
@@ -40,6 +55,10 @@
                        showInStore="1">
                     <label>Enabled for Checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Title</label>
                 </field>
                 <field id="base_category" translate="label" type="select" sortOrder="20" showInDefault="1"
                        showInWebsite="1"

@@ -1,4 +1,23 @@
 <?php
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
 
 namespace Easyship\Shipping\Block\Admin\Config;
 
@@ -6,10 +25,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
-    protected $_consumer;
-    protected $_integration;
-    protected $_fieldRenderer;
-    protected $_storeManager;
+    protected $consumer;
+    protected $integration;
+    protected $fieldRenderer;
+    protected $storeManager;
 
     public function __construct(
         \Magento\Backend\Block\Context $context,
@@ -20,35 +39,37 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         Generate $generate,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $authSession, $jsHelper, $data);
 
-        $this->_consumer = $consumer;
-        $this->_integration = $integration;
-        $this->_storeManager = $storeManager;
-        $this->_fieldRenderer = $generate;
+        $this->consumer = $consumer;
+        $this->integration = $integration;
+        $this->storeManager = $storeManager;
+        $this->fieldRenderer = $generate;
     }
 
     public function render(AbstractElement $element)
     {
-        $integration = $this->_integration
+        $integration = $this->integration
             ->addFieldToFilter('name', 'easyship')
-            ->getFirstItem();
+            ->setPageSize(1)
+            ->setCurPage(1)
+            ->getLastItem();
 
         $consumerId = $integration->getConsumerId();
         if (!$consumerId) {
             return false;
         }
 
-        $consumer = $this->_consumer->getItemById($consumerId);
+        $consumer = $this->consumer->getItemById($consumerId);
         if (!$consumer->getId()) {
             return false;
         }
 
         $html = '';
 
-        foreach ($this->_storeManager->getWebsites() as $website) {
+        foreach ($this->storeManager->getWebsites() as $website) {
             foreach ($website->getGroups() as $webgroup) {
                 $stores = $webgroup->getStores();
                 foreach ($stores as $store) {
@@ -58,23 +79,23 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         }
 
         return $html;
-
     }
 
     protected function _getFieldHtml($fieldset, $store)
     {
-        $field = $fieldset->addField($store->getId(), 'text',
-            array(
+        $field = $fieldset->addField(
+            $store->getId(),
+            'text',
+            [
                 'name'  => 'groups[ec_shipping][fields][store_'.$store->getId().'][value]',
                 'label' => $store->getFrontendName(),
                 'value' => '',
                 'inherit' => true,
                 'storeid' => $store->getId()
 
-            ))->setRenderer($this->_fieldRenderer);
-
+            ]
+        )->setRenderer($this->fieldRenderer);
 
         return $field->toHtml();
-
     }
 }

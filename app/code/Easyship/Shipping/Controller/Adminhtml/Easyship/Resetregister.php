@@ -1,4 +1,23 @@
 <?php
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
 
 namespace Easyship\Shipping\Controller\Adminhtml\Easyship;
 
@@ -13,8 +32,8 @@ class Resetregister extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Config\Model\ResourceModel\Config $config
-    )
-    {
+    ) {
+    
         parent::__construct($context);
 
         $this->_config = $config;
@@ -33,10 +52,12 @@ class Resetregister extends \Magento\Backend\App\Action
         } catch (\Exception $e) {
             throw new Exception($e->getMessage());
         }
+
+        return $this;
     }
 
     protected function _isAllowed()
     {
-        return true;
+        return $this->_authorization->isAllowed('Easyship_Shipping::easyship');
     }
 }

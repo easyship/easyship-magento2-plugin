@@ -1,4 +1,23 @@
 <?php
+/**
+ * Easyship.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Easyship.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.easyship.com/license-agreement.html
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Easyship
+ * @package     Easyship_Shipping
+ * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @license     https://www.easyship.com/license-agreement.html
+ */
 
 namespace Easyship\Shipping\Controller\Adminhtml\Easyship;
 
@@ -31,8 +50,8 @@ class Ajaxregister extends \Magento\Backend\App\Action
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Easyship\Shipping\Model\Api\Request $easyshipApi
-    )
-    {
+    ) {
+    
         parent::__construct($context);
 
         $this->_integration = $integration;
@@ -80,6 +99,7 @@ class Ajaxregister extends \Magento\Backend\App\Action
     }
 
     /**
+     * Return easyship integrations keys and tokens
      * @return array|bool
      * @throws \Exception
      */
@@ -88,20 +108,24 @@ class Ajaxregister extends \Magento\Backend\App\Action
         $response = [];
         $integration = $this->_integration
             ->addFieldToFilter('name', 'easyship')
-            ->getFirstItem();
+            ->setPageSize(1)
+            ->setCurPage(1)
+            ->getLastItem();
 
         if (empty($integration)) {
             throw new \Exception('Something was wrong please create easyship integration and activated it');
         }
 
         $consumerId = $integration->getConsumerId();
-        if (!$consumerId) {
+        if (empty($consumerId)) {
             return false;
         }
 
         $token = $this->_token
             ->addFieldToFilter('consumer_id', $consumerId)
-            ->getFirstItem();
+            ->setPageSize(1)
+            ->setCurPage(1)
+            ->getLastItem();
 
         if (!$token->getId()) {
             return false;
@@ -121,6 +145,7 @@ class Ajaxregister extends \Magento\Backend\App\Action
     }
 
     /**
+     * Return user information
      * @return array
      * @throws \Exception
      */
@@ -132,7 +157,8 @@ class Ajaxregister extends \Magento\Backend\App\Action
             throw new \Exception('User session is not found');
         }
 
-        $response['email'] = $user->getEmail();;
+        $response['email'] = $user->getEmail();
+        ;
         $response['first_name'] = $user->getFirstname();
         $response['last_name'] = $user->getLastname();
         $response['mobile_phone'] = $this->_storeManager->getConfig(StoreInformation::XML_PATH_STORE_INFO_PHONE);
@@ -141,6 +167,7 @@ class Ajaxregister extends \Magento\Backend\App\Action
     }
 
     /**
+     * Return company information
      * @return array
      * @throws \Exception
      */
@@ -159,6 +186,7 @@ class Ajaxregister extends \Magento\Backend\App\Action
     }
 
     /**
+     * Return store information
      * @param $storeId
      * @return array
      * @throws \Exception
@@ -169,64 +197,20 @@ class Ajaxregister extends \Magento\Backend\App\Action
             throw new \Exception('store not found');
         }
 
-        $response = array();
+        $response = [];
         $response['id'] = $storeId;
         $response['name'] = $this->_storeManager->getConfig(StoreInformation::XML_PATH_STORE_INFO_NAME);
         $response['url'] = $this->_storeManagerInterface->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
         $response['version'] = $this->_productMetadata->getVersion();
 
         return $response;
-
     }
 
-    protected function _testDoRequest()
-    {
-        return [
-
-            "registration" => [
-                "id" => "903b9e67-ea6b-4173-919a-2550e79a5274",
-                "flow" => "magento",
-                "current_step" => "welcome",
-                "last_step_reached" => "welcome",
-                "complete" => "false",
-                "accessible_steps" => [
-                    "welcome",
-                    "company",
-                    "address",
-                    "in-cart",
-                    "success",
-                ],
-                "event_logs" => [],
-                "data" => [
-                    "user" => [
-                        "first_name" => "Anna",
-                        "last_name" => "Holubiatnikova",
-                        "mobile_phone" => "NULL",
-                        "email" => "zewisa@gmail.com",
-                        "is_active" => "true",
-                        "is_email_confirmed" => "true",
-                        "role_id" => "10"
-                    ],
-                    "company" => [
-                        "name" => "Cable and Cotton",
-                        "country_id" => "78",
-                        "is_active" => "true"
-                    ],
-                    "store" => [
-                        "name" => "Cable and Cotton",
-                        "url" => "http://cableandcotton.laconicastudio.com",
-                        "platform_id" => "1001",
-                        "platform_store_id" => "1",
-                        "is_rates_enabled" => "true"
-                    ]
-                ]
-            ],
-            "redirect_url" => "https://es-staging.easyship.com/magento/registration/903b9e67-ea6b-4173-919a-2550e79a5274/"
-        ];
-    }
-
+    /**
+     * @return bool
+     */
     protected function _isAllowed()
     {
-        return true;
+        return $this->_authorization->isAllowed('Easyship_Shipping::easyship');
     }
 }

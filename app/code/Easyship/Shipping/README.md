@@ -1,0 +1,1 @@
+The Easyship_Shipping module implements integration with the Easyship shipping carrier.
