@@ -75,7 +75,7 @@ class Request
      */
     public function getQuotes($requestBody)
     {
-        $endpoint = self::BASE_ENDPOINT . 'rate/v1/rates';
+        $endpoint = self::BASE_ENDPOINT . 'rate/v1/magento';
         $result = $this->_doRequest($endpoint, $requestBody->getData(), null, true);
         return $result;
     }
