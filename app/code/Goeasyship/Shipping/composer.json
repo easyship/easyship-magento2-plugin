@@ -1,0 +1,14 @@
+{
+    "name": "goeasyship/shipping",
+    "description": "Easyship shipping for Magento 2",
+    "version": "1.0.0",
+    "type": "magento2-module",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Goeasyship\\Shipping\\": ""
+        }
+    }
+}
