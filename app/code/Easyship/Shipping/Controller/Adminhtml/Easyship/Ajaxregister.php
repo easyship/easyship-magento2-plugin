@@ -72,7 +72,7 @@ class Ajaxregister extends \Magento\Backend\App\Action
         $response = [];
         try {
             $params = $this->getRequest()->getParams();
-            if (count($params)) {
+            if (!empty($params)) {
                 $request = [];
                 $storeId = filter_var($this->getRequest()->getParam('store_id'), FILTER_SANITIZE_SPECIAL_CHARS);
 
