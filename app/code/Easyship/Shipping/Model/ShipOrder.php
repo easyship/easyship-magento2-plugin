@@ -6,7 +6,7 @@
  *
  * This source file is subject to the Easyship.com license that is
  * available through the world-wide-web at this URL:
- * https://www.easyship.com/license-agreement.html
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * DISCLAIMER
  *
@@ -16,7 +16,7 @@
  * @category    Easyship
  * @package     Easyship_Shipping
  * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
- * @license     https://www.easyship.com/license-agreement.html
+ * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Easyship\Shipping\Model;
@@ -49,7 +49,7 @@ class ShipOrder implements \Easyship\Shipping\Api\ShipOrderInterface
         \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
         \Magento\Sales\Model\Order\Shipment\Track $track
     ) {
-    
+
         $this->_resourceConnection = $resourceConnection;
         $this->_config = $config;
 
@@ -68,7 +68,7 @@ class ShipOrder implements \Easyship\Shipping\Api\ShipOrderInterface
         $trackData = [],
         $comment = ''
     ) {
-    
+
         $order = $this->_orderRepository->get($orderId);
 
         if (!$order->canShip()) {

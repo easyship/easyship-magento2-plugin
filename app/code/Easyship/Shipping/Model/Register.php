@@ -6,7 +6,7 @@
  *
  * This source file is subject to the Easyship.com license that is
  * available through the world-wide-web at this URL:
- * https://www.easyship.com/license-agreement.html
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * DISCLAIMER
  *
@@ -16,7 +16,7 @@
  * @category    Easyship
  * @package     Easyship_Shipping
  * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
- * @license     https://www.easyship.com/license-agreement.html
+ * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Easyship\Shipping\Model;
@@ -30,7 +30,7 @@ class Register implements \Easyship\Shipping\Api\RegisterInterface
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Config\Model\ResourceModel\Config $config
     ) {
-    
+
         $this->_config = $config;
         $this->_cacheTypeList = $cacheTypeList;
     }
