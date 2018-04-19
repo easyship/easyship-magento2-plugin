@@ -42,7 +42,7 @@ class Request
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Config\Model\ResourceModel\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Easyship\Shipping\Model\Logger\Logger $logger
+        \Goeasyship\Shipping\Model\Logger\Logger $logger
     ) {
         $this->_scopeConfig = $scopeConfig;
         $this->_config = $config;

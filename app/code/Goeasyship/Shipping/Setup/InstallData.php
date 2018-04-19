@@ -115,7 +115,7 @@ class InstallData implements InstallDataInterface
             'label' => 'Easyship Category',
             'input' => 'select',
             'class' => '',
-            'source' => 'Easyship\Shipping\Model\Source\Categories',
+            'source' => 'Goeasyship\Shipping\Model\Source\Categories',
             'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_WEBSITE,
             'visible' => true,
             'required' => false,
