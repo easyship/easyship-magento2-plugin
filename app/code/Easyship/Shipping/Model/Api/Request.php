@@ -6,7 +6,7 @@
  *
  * This source file is subject to the Easyship.com license that is
  * available through the world-wide-web at this URL:
- * https://www.easyship.com/license-agreement.html
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * DISCLAIMER
  *
@@ -16,7 +16,7 @@
  * @category    Easyship
  * @package     Easyship_Shipping
  * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
- * @license     https://www.easyship.com/license-agreement.html
+ * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Easyship\Shipping\Model\Api;
@@ -24,7 +24,7 @@ namespace Easyship\Shipping\Model\Api;
 class Request
 {
 
-    const BASE_ENDPOINT = 'https://api-staging.easyship.com/';
+    const BASE_ENDPOINT = 'https://api.easyship.com/';
 
     const BASE_SETTINGS_PATH = 'easyship_options/ec_shipping/';
 
