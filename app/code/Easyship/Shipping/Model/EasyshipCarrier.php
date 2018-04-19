@@ -367,15 +367,4 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
 
         return $result;
     }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function prepareMethodName(string $name)
-    {
-        $badSymbols = [' ', '-', '_'];
-        $result = str_replace($badSymbols, '', $name);
-        return (string) $result;
-    }
 }
