@@ -1,5 +1,5 @@
 {
-    "name": "easyship/module-shipping",
+    "name": "easyship/shipping",
     "description": "Easyship shipping for Magento 2",
     "version": "1.0.0",
     "type": "magento2-module",
