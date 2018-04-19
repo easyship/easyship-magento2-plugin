@@ -55,7 +55,6 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         array $data = []
     ) {
-    
         $this->_easyshipApi = $easyshipApi;
         $this->_countryFactory = $countryFactory;
         $this->_storeManager = $storeManager;
@@ -359,7 +358,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
             $method = $this->_rateMethodFactory->create();
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($rate['courier_name']);
-            $method->setMethod($this->prepareMethodName($rate['courier_name']));
+            $method->setMethod($rate['short_courier_id']);
             $method->setMethodTitle($rate['full_description']);
             $method->setCost($rate['total_charge']);
             $method->setPrice($rate['total_charge']);
