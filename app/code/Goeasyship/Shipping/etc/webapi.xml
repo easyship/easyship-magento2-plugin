@@ -24,14 +24,14 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <route url="/V1/easyship/token" method="POST">
-        <service class="Easyship\Shipping\Api\RegisterInterface" method="saveToken"/>
+        <service class="Goeasyship\Shipping\Api\RegisterInterface" method="saveToken"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
     </route>
 
     <route url="/V1/easyship/ship" method="POST">
-        <service class="Easyship\Shipping\Api\ShipOrderInterface" method="execute"/>
+        <service class="Goeasyship\Shipping\Api\ShipOrderInterface" method="execute"/>
         <resources>
             <resource ref="Magento_Shipping::carriers"/>
         </resources>

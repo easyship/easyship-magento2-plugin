@@ -42,7 +42,7 @@
                 <field id="es_shipping" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Easyship</label>
-                    <frontend_model>Easyship\Shipping\Block\Admin\Config\Connect</frontend_model>
+                    <frontend_model>Goeasyship\Shipping\Block\Admin\Config\Connect</frontend_model>
                 </field>
             </group>
         </section>
@@ -64,7 +64,7 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Base Category</label>
-                    <source_model>Easyship\Shipping\Model\Source\Categories</source_model>
+                    <source_model>Goeasyship\Shipping\Model\Source\Categories</source_model>
                 </field>
                 <field id="base_width" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
                        showInStore="1">

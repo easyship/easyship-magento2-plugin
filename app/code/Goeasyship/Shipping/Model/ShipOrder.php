@@ -23,7 +23,7 @@ namespace Goeasyship\Shipping\Model;
 
 use Magento\Sales\Model\Order\Config as OrderConfig;
 
-class ShipOrder implements \Easyship\Shipping\Api\ShipOrderInterface
+class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
 {
     const ORDER_IN_PROGRESS = 'processing';
 
