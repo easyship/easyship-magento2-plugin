@@ -44,12 +44,10 @@ class Request
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Easyship\Shipping\Model\Logger\Logger $logger
     ) {
-    
         $this->_scopeConfig = $scopeConfig;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->logger = $logger;
-        $this->refreshTokenField();
     }
 
     /**
@@ -62,8 +60,6 @@ class Request
         $endpoint = self::BASE_ENDPOINT . 'api/v1/magento/registrations';
 
         $result = $this->_doRequest($endpoint, $requestBody, null, false, 'POST');
-
-        $this->refreshTokenField();
 
         return $result;
     }
@@ -94,7 +90,7 @@ class Request
         $client->setMethod($method);
 
         if ($isAuth) {
-            $client->setHeaders('Authorization', 'Bearer ' . $this->_token);
+            $client->setHeaders('Authorization', 'Bearer ' . $this->getToken());
         }
 
         if (is_null($headers)) {
@@ -121,14 +117,19 @@ class Request
     }
 
     /**
-     * Actualization token filed
+     * Get Token
+     * @return string
      */
-    protected function refreshTokenField()
+    protected function getToken()
     {
-        $this->_token = $this->_scopeConfig->getValue(
-            self::BASE_SETTINGS_PATH . 'token',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        if (empty($this->_token)) {
+            $this->_token = $this->_scopeConfig->getValue(
+                self::BASE_SETTINGS_PATH . 'token',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            );
+        }
+
+        return $this->_token;
     }
 
     /**
@@ -139,7 +140,6 @@ class Request
      */
     protected function loggerRequest($endpoint, $status, $response = null)
     {
-
         $this->logger->info($endpoint . " : " . $status);
         if (is_array($response)) {
             $this->logger->info(json_encode($response));

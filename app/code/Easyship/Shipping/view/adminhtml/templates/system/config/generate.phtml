@@ -19,16 +19,16 @@
  * @license     https://www.easyship.com/license-agreement.html
  */
 ?>
-<div id="easyship_<?php echo $this->getElementId() ?>">
+<div id="easyship_<?php echo $block->getElementId() ?>">
     <div class="flex-container storebackground">
         <div class="statuscontainer">
             <div class="storename">
                 <?php echo __('Store Name') ?>:
-                <strong><?php echo $this->getStore(); ?></strong>
+                <strong><?php echo $block->getStore(); ?></strong>
             </div>
             <div class="statusLabel">
                 <?php echo __('Plugin Status') ?>:
-                <?php if ($this->getActived()) : ?>
+                <?php if ($block->getActived()) : ?>
                     <span class="status active"><?php echo __('activated') ?></span>
                 <?php else : ?>
                     <span class="status deactive"><?php echo __('disabled') ?></span>
@@ -37,12 +37,12 @@
         </div>
 
         <div class="buttoncontainer">
-            <?php if (!$this->getActived()) : ?>
-                <button type="button" class="activatebutton" onclick="postRegistration('<?php echo $this->getStoreUrl() ?>', <?php echo $this->getStoreId() ?>);">
+            <?php if (!$block->getActived()) : ?>
+                <button type="button" class="activatebutton" onclick="postRegistration('<?php echo $block->getStoreUrl() ?>', <?php echo $block->getStoreId() ?>);">
                     <?php echo __('ACTIVATE PLUGIN') ?>
                 </button>
             <?php else : ?>
-                <button type="button" class="resetbutton" onclick="resetStore('<?php echo $this->getResetStoreUrl() ?>', <?php echo $this->getStoreId() ?>);">
+                <button type="button" class="resetbutton" onclick="resetStore('<?php echo $block->getResetStoreUrl() ?>', <?php echo $block->getStoreId() ?>);">
                     <?php echo __('RESET STORE SETTINGS') ?>
                 </button>
             <?php endif; ?>
