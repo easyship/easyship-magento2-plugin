@@ -21,7 +21,7 @@
 
 namespace Goeasyship\Shipping\Model;
 
-class Register implements \Easyship\Shipping\Api\RegisterInterface
+class Register implements \Goeasyship\Shipping\Api\RegisterInterface
 {
     protected $_config;
     protected $_cacheTypeList;
