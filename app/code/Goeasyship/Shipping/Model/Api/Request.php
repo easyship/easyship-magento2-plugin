@@ -84,7 +84,7 @@ class Request
      * @param string $method
      * @return bool|mixed
      */
-    protected function _doRequest(string $endpoint, array $requestBody, $headers = null, $isAuth = true, string $method = 'POST')
+    protected function _doRequest($endpoint, array $requestBody, $headers = null, $isAuth = true, $method = 'POST')
     {
         $client = new \Zend_Http_Client($endpoint);
         $client->setMethod($method);
