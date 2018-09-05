@@ -18,6 +18,6 @@
         }
     ],
     "require": {
-        "easyship/easyship-magento2-plugin": "release/1.0.2"
+        "easyship/easyship-magento2-plugin": "release-1.0.2"
     }
 }
