@@ -1,1 +1,1 @@
-# easyship-magento2-plugin
+The Goeasyship_Shipping module implements integration with the Easyship shipping carrier.
