@@ -1,7 +1,7 @@
 {
     "name": "goeasyship/shipping",
     "description": "Easyship shipping for Magento 2",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "type": "magento2-module",
     "autoload": {
         "files": [
