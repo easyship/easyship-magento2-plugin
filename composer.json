@@ -10,5 +10,14 @@
         "psr-4": {
             "Goeasyship\\Shipping\\": ""
         }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/easyship/easyship-magento2-plugin"
+        }
+    ],
+    "require": {
+        "easyship/easyship-magento2-plugin": "release/1.0.2"
     }
 }
