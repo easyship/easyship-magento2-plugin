@@ -1,7 +1,7 @@
 {
     "name": "goeasyship/shipping",
     "description": "Easyship shipping for Magento 2",
-    "version": "1.0.2",
+    "version": "dev-1.0.2",
     "type": "magento2-module",
     "autoload": {
         "files": [
@@ -16,8 +16,5 @@
             "type": "vcs",
             "url": "https://github.com/easyship/easyship-magento2-plugin"
         }
-    ],
-    "require": {
-        "easyship/easyship-magento2-plugin": "dev-1.0.2"
-    }
+    ]
 }
