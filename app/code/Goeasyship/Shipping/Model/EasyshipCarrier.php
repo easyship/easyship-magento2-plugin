@@ -33,7 +33,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     protected $_easyshipApi;
     protected $_countryFactory;
     protected $_storeManager;
-    protected $storeId = null;
+    protected $websiteId = null;
 
     protected $_rateResultFactory;
     protected $_rateMethodFactory;
@@ -226,17 +226,16 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     }
 
     /**
-     * Get weight
-     * @param $item
+     * Get website id
      * @return int
      */
-    protected function getStoreId()
+    protected function getWebsiteId()
     {
-        if (empty($this->storeId)) {
-            $this->storeId = $this->_storeManager->getStore()->getId();
+        if (empty($this->websiteId)) {
+            $this->websiteId = $this->_storeManager->getStore()->getWebsiteId();
         }
 
-        return $this->storeId;
+        return $this->websiteId;
     }
 
     /**
@@ -267,7 +266,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         $base_category = $this->_scopeConfig->getValue(
             'carriers/easyship/base_category',
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->getStoreId()
+            $this->getWebsiteId()
         );
 
         if (empty($base_category)) {
@@ -291,7 +290,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         $base_height = $this->_scopeConfig->getValue(
             'carriers/easyship/base_height',
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->getStoreId()
+            $this->getWebsiteId()
         );
 
         if (empty($base_height)) {
@@ -315,7 +314,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         $base_width = $this->_scopeConfig->getValue(
             'carriers/easyship/base_width',
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->getStoreId()
+            $this->getWebsiteId()
         );
 
         if (empty($base_width)) {
@@ -339,7 +338,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         $base_length = $this->_scopeConfig->getValue(
             'carriers/easyship/base_length',
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->getStoreId()
+            $this->getWebsiteId()
         );
 
         if (empty($base_length)) {
