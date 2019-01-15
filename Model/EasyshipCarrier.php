@@ -197,6 +197,8 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
             $r->setDestinationPostalCode($request->getDestPostcode());
         }
 
+        $this->setAddressToRequest($r, $request);
+
         $items = [];
         if ($request->getAllItems()) {
             foreach ($request->getAllItems() as $item) {
@@ -378,5 +380,34 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Set address to request
+     * @param $data
+     * @param $request
+     */
+    protected function setAddressToRequest($data, $request)
+    {
+        if ($request->getDestCity()) {
+            $data->setDestinationCity($request->getDestCity());
+        }
+
+        if ($request->getDestRegionCode()) {
+            $data->setDestinationState($request->getDestRegionCode());
+        }
+
+        $address = explode("\n", $request->getDestStreet());
+        if (!empty($address[0])) {
+            $data->setData('destination_address_line_1', $address[0]);
+        } else {
+            $data->setData('destination_address_line_1', '');
+        }
+
+        if (!empty($address[1])) {
+            $data->setData('destination_address_line_2', $address[1]);
+        } else {
+            $data->setData('destination_address_line_2', '');
+        }
     }
 }
