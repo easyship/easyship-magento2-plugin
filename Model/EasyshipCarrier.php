@@ -249,7 +249,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     protected function getWeight($item)
     {
         if ($item->hasWeight() && !empty($item->getWeight())) {
-            return (int)$item->getWeight();
+            return $item->getWeight();
         }
 
         return 1;
