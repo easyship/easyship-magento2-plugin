@@ -390,7 +390,9 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     protected function setAddressToRequest($data, $request)
     {
         if ($request->getDestCity()) {
-            $data->setDestinationCity($request->getDestCity());
+            $data->setDestinationCity(
+                htmlspecialchars($request->getDestCity(), ENT_XML1)
+            );
         }
 
         if ($request->getDestRegionCode()) {
