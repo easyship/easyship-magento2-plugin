@@ -15,7 +15,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -25,21 +25,37 @@ use Braintree\Exception;
 
 class Resetregister extends \Magento\Backend\App\Action
 {
+    /**
+     * @var \Magento\Config\Model\ResourceModel\Config
+     */
     protected $_config;
+    /**
+     * @var \Magento\Framework\App\Cache\TypeListInterface
+     */
     protected $_cacheTypeList;
 
+    /**
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Config\Model\ResourceModel\Config $config
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Config\Model\ResourceModel\Config $config
     ) {
-
         parent::__construct($context);
 
         $this->_config = $config;
         $this->_cacheTypeList = $cacheTypeList;
     }
 
+    /**
+     * Registration reset controller
+     *
+     * @return $this|false|\Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws Exception
+     */
     public function execute()
     {
         $storeId = filter_var($this->getRequest()->getParam('store_id'), FILTER_SANITIZE_SPECIAL_CHARS);
@@ -56,6 +72,11 @@ class Resetregister extends \Magento\Backend\App\Action
         return $this;
     }
 
+    /**
+     * Checking access rights to the controller
+     *
+     * @return bool
+     */
     protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Goeasyship_Shipping::easyship');

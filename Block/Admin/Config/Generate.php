@@ -15,7 +15,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -23,19 +23,41 @@ namespace Goeasyship\Shipping\Block\Admin\Config;
 
 class Generate extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_template = 'Goeasyship_Shipping::system/config/generate.phtml';
+    /**
+     * Constructor
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+        $this->setTemplate('Goeasyship_Shipping::system/config/generate.phtml');
+    }
 
+    /**
+     * Render block
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $html = '<td class="value">';
-        $html .= "<h3>" . __('Here are stores we found in your settings. Please select the store to integrate with Easyship.') . "</h3>";
-        $html .= $this->_getElementHtml($element);
+        $html .= "<h3>" . __('Here are stores we found in your settings.'
+                .' Please select the store to integrate with Easyship.') . "</h3>";
+        $html .= $this->getElementHtml($element);
         $html .= '</td>';
 
-        return $this->_decorateRowHtml($element, $html);
+            return $this->_decorateRowHtml($element, $html);
     }
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    /**
+     * Get element html for EasyShip register
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     */
+    protected function getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $id = $element->getStoreid();
         $isActived = $this->_scopeConfig->getValue('easyship_options/ec_shipping/token', 'default', $id);
