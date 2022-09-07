@@ -15,7 +15,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -25,11 +25,36 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
+    /**
+     * @var \Magento\Integration\Model\ResourceModel\Oauth\Consumer\Collection
+     */
     protected $consumer;
+
+    /**
+     * @var \Magento\Integration\Model\ResourceModel\Integration\Collection
+     */
     protected $integration;
+
+    /**
+     * @var Generate
+     */
     protected $fieldRenderer;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $storeManager;
 
+    /**
+     * @param \Magento\Backend\Block\Context $context
+     * @param \Magento\Backend\Model\Auth\Session $authSession
+     * @param \Magento\Framework\View\Helper\Js $jsHelper
+     * @param \Magento\Integration\Model\ResourceModel\Oauth\Consumer\Collection $consumer
+     * @param \Magento\Integration\Model\ResourceModel\Integration\Collection $integration
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param Generate $generate
+     * @param array $data
+     */
     public function __construct(
         \Magento\Backend\Block\Context $context,
         \Magento\Backend\Model\Auth\Session $authSession,
@@ -49,6 +74,12 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         $this->fieldRenderer = $generate;
     }
 
+    /**
+     * Render block
+     *
+     * @param AbstractElement $element
+     * @return false|string
+     */
     public function render(AbstractElement $element)
     {
         $integration = $this->integration
@@ -81,6 +112,13 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $html;
     }
 
+    /**
+     * Render html for field
+     *
+     * @param AbstractElement $fieldset
+     * @param Store $store
+     * @return mixed
+     */
     protected function _getFieldHtml($fieldset, $store)
     {
         $field = $fieldset->addField(

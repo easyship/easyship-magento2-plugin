@@ -15,34 +15,57 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model\Api;
 
+use Magento\Framework\DataObject;
+
 class Request
 {
 
-    const BASE_ENDPOINT = 'https://api.easyship.com/';
+    public const BASE_ENDPOINT = 'https://api.easyship.com/';
 
-    const BASE_SETTINGS_PATH = 'easyship_options/ec_shipping/';
+    public const BASE_SETTINGS_PATH = 'easyship_options/ec_shipping/';
 
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
 
+    /**
+     * @var \Magento\Config\Model\ResourceModel\Config
+     */
     protected $_config;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
 
+    /**
+     * @var ?string
+     */
     protected $_token;
 
+    /**
+     * @var \Goeasyship\Shipping\Model\Logger\Logger
+     */
     protected $logger;
 
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Config\Model\ResourceModel\Config $config
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Goeasyship\Shipping\Model\Logger\Logger $logger
+     */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Config\Model\ResourceModel\Config $config,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Goeasyship\Shipping\Model\Logger\Logger $logger
+        \Magento\Config\Model\ResourceModel\Config         $config,
+        \Magento\Store\Model\StoreManagerInterface         $storeManager,
+        \Goeasyship\Shipping\Model\Logger\Logger           $logger
     ) {
         $this->_scopeConfig = $scopeConfig;
         $this->_config = $config;
@@ -52,7 +75,8 @@ class Request
 
     /**
      * Registration app
-     * @param $requestBody
+     *
+     * @param DataObject $requestBody
      * @return bool|mixed
      */
     public function registrationsRequest($requestBody)
@@ -66,7 +90,8 @@ class Request
 
     /**
      * Return rates
-     * @param $requestBody
+     *
+     * @param DataObject $requestBody
      * @return bool|mixed
      */
     public function getQuotes($requestBody)
@@ -77,9 +102,11 @@ class Request
     }
 
     /**
+     * Do request to endpoint
+     *
      * @param string $endpoint
      * @param array $requestBody
-     * @param null $headers
+     * @param ?array $headers
      * @param bool $isAuth
      * @param string $method
      * @return bool|mixed
@@ -93,7 +120,7 @@ class Request
             $client->setHeaders('Authorization', 'Bearer ' . $this->getToken());
         }
 
-        if (is_null($headers)) {
+        if ($headers === null) {
             $client->setHeaders([
                 'Content-Type' => 'application/json'
             ]);
@@ -118,6 +145,7 @@ class Request
 
     /**
      * Get Token
+     *
      * @return string
      */
     protected function getToken()
@@ -134,9 +162,10 @@ class Request
 
     /**
      * Add line to log file
-     * @param $endpoint
-     * @param $status
-     * @param null $response
+     *
+     * @param string $endpoint
+     * @param string $status
+     * @param ?array $response
      */
     protected function loggerRequest($endpoint, $status, $response = null)
     {

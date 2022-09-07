@@ -1,4 +1,5 @@
-<?php
+<?xml version="1.0"?>
+<!--
 /**
  * Easyship.
  *
@@ -18,24 +19,11 @@
  * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
+-->
 
-namespace Goeasyship\Shipping\Api;
-
-interface ShipOrderInterface
-{
-    /**
-     * Creates new Shipment for given Order.
-     *
-     * @param int $order_id
-     * @param mixed $items []
-     * @param mixed $track_data []
-     * @param string $comment
-     * @return int Id of created Shipment.
-     */
-    public function execute(
-        $order_id,
-        $items = [],
-        $track_data = [],
-        $comment = ''
-    );
-}
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="sales_shipment_track" resource="sales" comment="Sales Flat Shipment Track">
+        <column xsi:type="text" name="tracking_page_url" nullable="false" comment="Tracking page url"/>
+    </table>
+</schema>

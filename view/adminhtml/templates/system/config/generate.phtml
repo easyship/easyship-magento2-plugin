@@ -15,35 +15,44 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
+
+/**
+ * @var \Goeasyship\Shipping\Block\Admin\Config\Generate $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
 ?>
-<div id="easyship_<?php echo $block->getElementId() ?>">
+<div id="easyship_<?= $escaper->escapeHtml($block->getElementId()) ?>">
     <div class="flex-container storebackground">
         <div class="statuscontainer">
             <div class="storename">
-                <?php echo __('Store Name') ?>:
-                <strong><?php echo $block->getStore(); ?></strong>
+                <?= $escaper->escapeHtml(__('Store Name')) ?>:
+                <strong><?= $escaper->escapeHtml($block->getStore()) ?></strong>
             </div>
             <div class="statusLabel">
-                <?php echo __('Plugin Status') ?>:
-                <?php if ($block->getActived()) : ?>
-                    <span class="status active"><?php echo __('activated') ?></span>
-                <?php else : ?>
-                    <span class="status deactive"><?php echo __('disabled') ?></span>
+                <?= $escaper->escapeHtml(__('Plugin Status')) ?>:
+                <?php if ($block->getActived()): ?>
+                    <span class="status active"><?= $escaper->escapeHtml(__('activated')) ?></span>
+                <?php else: ?>
+                    <span class="status deactive"><?= $escaper->escapeHtml(__('disabled')) ?></span>
                 <?php endif; ?>
             </div>
         </div>
 
         <div class="buttoncontainer">
-            <?php if (!$block->getActived()) : ?>
-                <button type="button" class="activatebutton" onclick="postRegistration('<?php echo $block->getStoreUrl() ?>', <?php echo $block->getStoreId() ?>);">
-                    <?php echo __('ACTIVATE PLUGIN') ?>
+            <?php if (!$block->getActived()): ?>
+                <button type="button" class="activatebutton"
+                        onclick="postRegistration('<?= $escaper->escapeHtmlAttr($block->getStoreUrl()
+                            . "', " . $block->getStoreId()) ?>);">
+                    <?= $escaper->escapeHtml(__('ACTIVATE PLUGIN')) ?>
                 </button>
-            <?php else : ?>
-                <button type="button" class="resetbutton" onclick="resetStore('<?php echo $block->getResetStoreUrl() ?>', <?php echo $block->getStoreId() ?>);">
-                    <?php echo __('RESET STORE SETTINGS') ?>
+            <?php else: ?>
+                <button type="button" class="resetbutton"
+                        onclick="resetStore('<?= $escaper->escapeHtmlAttr($block->getResetStoreUrl()
+                            . "', " . $block->getStoreId()) ?>);">
+                    <?= $escaper->escapeHtml(__('RESET STORE SETTINGS')) ?>
                 </button>
             <?php endif; ?>
         </div>
@@ -60,7 +69,7 @@
                 type: 'post',
                 data: {store_id: storeId},
                 success: function (response) {
-                    if(response.error) {
+                    if (response.error) {
                         $('body').notification('clear')
                             .notification('add', {
                                 error: true,
