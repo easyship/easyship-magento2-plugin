@@ -93,6 +93,7 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
         }
 
         $shipment->setShipmentStatus(\Magento\Sales\Model\Order\Shipment::STATUS_NEW);
+        $shipment->getExtensionAttributes()->setSourceCode('default');
 
         $shipment->register();
 
@@ -107,7 +108,7 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
         } catch (\Exception $e) {
             $connection->rollBack();
             throw new \Magento\Framework\Exception\CouldNotSaveException(
-                __('Could not save a shipment, see error log for details')
+                __('Could not save a shipment, see error log for details' . $e->getMessage())
             );
         }
 
