@@ -159,8 +159,6 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
     {
         $this->_request = $request;
 
-        $currencyCode = $this->_storeManager->getStore()->getCurrentCurrencyCode();
-
         $r = new \Magento\Framework\DataObject();
 
         if ($request->getOrigCountry()) {
@@ -198,6 +196,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         }
 
         $this->setAddressToRequest($r, $request);
+        $r->setData('output_currency', $this->_storeManager->getStore()->getCurrentCurrencyCode());
 
         $items = [];
         if ($request->getAllItems()) {
@@ -214,7 +213,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
                         'width' => $this->getEasyshipWidth($item->getProduct()),
                         'length' => $this->getEasyshipLength($item->getProduct()),
                         'category' => $this->getEasyshipCategory($item->getProduct()),
-                        'declared_currency' => $currencyCode,
+                        'declared_currency' => $this->_storeManager->getStore()->getBaseCurrencyCode(),
                         'declared_customs_value' => (float)$item->getPrice(),
                         'sku' => $item->getSku()
                     ];
