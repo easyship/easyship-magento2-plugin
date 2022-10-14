@@ -374,13 +374,14 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
 
         $result = $this->_rateResultFactory->create();
         foreach ($prefer_rates as $rate) {
+            $convertedPrice = $currentCurrency->convert($rate['total_charge'], $baseCurrencyCode);
             $method = $this->_rateMethodFactory->create();
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($rate['courier_name']);
             $method->setMethod($rate['short_courier_id']);
             $method->setMethodTitle($rate['full_description']);
-            $method->setCost($currentCurrency->convert($rate['total_charge'], $baseCurrencyCode));
-            $method->setPrice($currentCurrency->convert($rate['total_charge'], $baseCurrencyCode));
+            $method->setCost($convertedPrice);
+            $method->setPrice($convertedPrice);
             $result->append($method);
         }
 
