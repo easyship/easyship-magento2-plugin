@@ -196,7 +196,9 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
         }
 
         $this->setAddressToRequest($r, $request);
-        $r->setData('output_currency', $this->_storeManager->getStore()->getCurrentCurrencyCode());
+
+        $currentCurrencyCode = $this->_storeManager->getStore()->getCurrentCurrencyCode();
+        $r->setData('output_currency', $currentCurrencyCode);
 
         $items = [];
         if ($request->getAllItems()) {
@@ -206,6 +208,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
                 }
 
                 $itemQty = (int)$item->getQty();
+                $unitPriceInclTaxAndDiscount = ($item->getRowTotal() - $item->getDiscountAmount() + $item->getTaxAmount()) / $itemQty;
                 for ($i = 0; $i < $itemQty; $i++) {
                     $items[] = [
                         'actual_weight' => $this->getWeight($item->getProduct()),
@@ -213,8 +216,8 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
                         'width' => $this->getEasyshipWidth($item->getProduct()),
                         'length' => $this->getEasyshipLength($item->getProduct()),
                         'category' => $this->getEasyshipCategory($item->getProduct()),
-                        'declared_currency' => $this->_storeManager->getStore()->getBaseCurrencyCode(),
-                        'declared_customs_value' => (float)$item->getPrice(),
+                        'declared_currency' => $currentCurrencyCode,
+                        'declared_customs_value' => $unitPriceInclTaxAndDiscount,
                         'sku' => $item->getSku()
                     ];
                 }
@@ -366,6 +369,9 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
          * @var \Magento\Shipping\Model\Rate\Result $result
          * @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method
          */
+        $currentCurrency = $this->_storeManager->getStore()->getCurrentCurrency();
+        $baseCurrencyCode = $this->_storeManager->getStore()->getBaseCurrencyCode();
+
         $result = $this->_rateResultFactory->create();
         foreach ($prefer_rates as $rate) {
             $method = $this->_rateMethodFactory->create();
@@ -373,8 +379,8 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
             $method->setCarrierTitle($rate['courier_name']);
             $method->setMethod($rate['short_courier_id']);
             $method->setMethodTitle($rate['full_description']);
-            $method->setCost($rate['total_charge']);
-            $method->setPrice($rate['total_charge']);
+            $method->setCost($currentCurrency->convert($rate['total_charge'], $baseCurrencyCode));
+            $method->setPrice($currentCurrency->convert($rate['total_charge'], $baseCurrencyCode));
             $result->append($method);
         }
 
