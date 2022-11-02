@@ -369,12 +369,13 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
          * @var \Magento\Shipping\Model\Rate\Result $result
          * @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method
          */
-        $currentCurrency = $this->_storeManager->getStore()->getCurrentCurrency();
-        $baseCurrencyCode = $this->_storeManager->getStore()->getBaseCurrencyCode();
+        $currentCurrencyCode = $this->_storeManager->getStore()->getCurrentCurrencyCode();
+        $baseCurrency = $this->_storeManager->getStore()->getBaseCurrency();
+        $convertRate = $baseCurrency->getRate($currentCurrencyCode);
 
         $result = $this->_rateResultFactory->create();
         foreach ($prefer_rates as $rate) {
-            $convertedPrice = $currentCurrency->convert($rate['total_charge'], $baseCurrencyCode);
+            $convertedPrice = $rate['total_charge'] / $convertRate;
             $method = $this->_rateMethodFactory->create();
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($rate['courier_name']);
