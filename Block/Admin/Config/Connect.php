@@ -15,28 +15,61 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Block\Admin\Config;
 
+use Magento\Backend\Block\Context;
+use Magento\Backend\Model\Auth\Session;
+use Magento\Config\Block\System\Config\Form\Fieldset;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\View\Helper\Js;
+use Magento\Integration\Model\ResourceModel\Oauth\Consumer\Collection;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 
-class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
+class Connect extends Fieldset
 {
+    /**
+     * @var Collection
+     */
     protected $consumer;
+
+    /**
+     * @var \Magento\Integration\Model\ResourceModel\Integration\Collection
+     */
     protected $integration;
+
+    /**
+     * @var Generate
+     */
     protected $fieldRenderer;
+
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
 
+    /**
+     * @param Context $context
+     * @param Session $authSession
+     * @param Js $jsHelper
+     * @param Collection $consumer
+     * @param \Magento\Integration\Model\ResourceModel\Integration\Collection $integration
+     * @param StoreManagerInterface $storeManager
+     * @param Generate $generate
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Backend\Block\Context $context,
-        \Magento\Backend\Model\Auth\Session $authSession,
-        \Magento\Framework\View\Helper\Js $jsHelper,
-        \Magento\Integration\Model\ResourceModel\Oauth\Consumer\Collection $consumer,
+        Context $context,
+        Session $authSession,
+        Js $jsHelper,
+        Collection $consumer,
         \Magento\Integration\Model\ResourceModel\Integration\Collection $integration,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        StoreManagerInterface $storeManager,
         Generate $generate,
         array $data = []
     ) {
@@ -49,6 +82,13 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         $this->fieldRenderer = $generate;
     }
 
+    /**
+     * Render block
+     *
+     * @param AbstractElement $element
+     * @return false|string
+     * @throws NoSuchEntityException
+     */
     public function render(AbstractElement $element)
     {
         $integration = $this->integration
@@ -81,6 +121,14 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $html;
     }
 
+    /**
+     * Render html for field
+     *
+     * @param AbstractElement $fieldset
+     * @param Store $store
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
     protected function _getFieldHtml($fieldset, $store)
     {
         $field = $fieldset->addField(

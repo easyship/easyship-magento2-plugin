@@ -15,26 +15,48 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model;
 
-class Register implements \Goeasyship\Shipping\Api\RegisterInterface
+use Goeasyship\Shipping\Api\RegisterInterface;
+use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\TypeListInterface;
+
+class Register implements RegisterInterface
 {
+    /**
+     * @var Config
+     */
     protected $_config;
+
+    /**
+     * @var TypeListInterface
+     */
     protected $_cacheTypeList;
 
+    /**
+     * @param TypeListInterface $cacheTypeList
+     * @param Config $config
+     */
     public function __construct(
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Config\Model\ResourceModel\Config $config
+        TypeListInterface $cacheTypeList,
+        Config $config
     ) {
 
         $this->_config = $config;
         $this->_cacheTypeList = $cacheTypeList;
     }
 
+    /**
+     * Logic for save token
+     *
+     * @param ?int $storeId
+     * @param string $token
+     * @return false|void
+     */
     public function saveToken($storeId, $token)
     {
         if (!$storeId) {

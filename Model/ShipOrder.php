@@ -15,44 +15,103 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model;
 
+use Exception;
+use Goeasyship\Shipping\Api\ShipOrderInterface;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Model\Convert\Order;
 use Magento\Sales\Model\Order\Config as OrderConfig;
+use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Model\Order\Shipment;
+use Magento\Sales\Model\Order\Shipment\Track;
+use Magento\Sales\Model\Order\ShipmentFactory;
+use Magento\Sales\Model\Order\ShipmentRepository;
+use Magento\Sales\Model\OrderRepository;
+use Magento\Shipping\Model\ShipmentNotifier;
 
-class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
+class ShipOrder implements ShipOrderInterface
 {
-    const ORDER_IN_PROGRESS = 'processing';
+    public const ORDER_IN_PROGRESS = 'processing';
 
+    /**
+     * @var ResourceConnection
+     */
     protected $_resourceConnection;
+
+    /**
+     * @var OrderConfig
+     */
     protected $_config;
 
+    /**
+     * @var Order
+     */
     protected $_convertOrder;
+
+    /**
+     * @var \Magento\Sales\Model\Order
+     */
     protected $_order;
+
+    /**
+     * @var ShipmentFactory
+     */
     protected $_shipmentFactory;
+
+    /**
+     * @var OrderRepository
+     */
     protected $_orderRepository;
+
+    /**
+     * @var ShipmentRepository
+     */
     protected $_shipmentRepository;
+
+    /**
+     * @var ShipmentNotifier
+     */
     protected $_shipmentNotifier;
+
+    /**
+     * @var Track
+     */
     protected $_track;
 
+    /**
+     * @param ResourceConnection $resourceConnection
+     * @param OrderConfig $config
+     * @param Order $convertOrder
+     * @param OrderRepository $orderRepository
+     * @param ShipmentRepository $shipmentRepository
+     * @param ShipmentNotifier $shipmentNotifier
+     * @param \Magento\Sales\Model\Order $order
+     * @param ShipmentFactory $shipmentFactory
+     * @param Track $track
+     */
     public function __construct(
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
+        ResourceConnection $resourceConnection,
         OrderConfig $config,
-        \Magento\Sales\Model\Convert\Order $convertOrder,
-        \Magento\Sales\Model\OrderRepository $orderRepository,
-        \Magento\Sales\Model\Order\ShipmentRepository $shipmentRepository,
-        \Magento\Shipping\Model\ShipmentNotifier $shipmentNotifier,
+        Order $convertOrder,
+        OrderRepository $orderRepository,
+        ShipmentRepository $shipmentRepository,
+        ShipmentNotifier $shipmentNotifier,
         \Magento\Sales\Model\Order $order,
-        \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
-        \Magento\Sales\Model\Order\Shipment\Track $track
+        ShipmentFactory $shipmentFactory,
+        Track $track
     ) {
 
         $this->_resourceConnection = $resourceConnection;
         $this->_config = $config;
-
         $this->_convertOrder = $convertOrder;
         $this->_order = $order;
         $this->_shipmentFactory = $shipmentFactory;
@@ -62,6 +121,19 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
         $this->_track = $track;
     }
 
+    /**
+     * Logic of working with shopping
+     *
+     * @param int|string $orderId
+     * @param array $items
+     * @param array $trackData
+     * @param string $comment
+     * @return bool|string
+     * @throws CouldNotSaveException
+     * @throws InputException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function execute(
         $orderId,
         $items = [],
@@ -92,7 +164,8 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
             $shipment->addComment($comment);
         }
 
-        $shipment->setShipmentStatus(\Magento\Sales\Model\Order\Shipment::STATUS_NEW);
+        $shipment->setShipmentStatus(Shipment::STATUS_NEW);
+        $shipment->getExtensionAttributes()->setSourceCode('default');
 
         $shipment->register();
 
@@ -104,10 +177,10 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
             $this->_shipmentRepository->save($shipment);
             $this->_orderRepository->save($order);
             $connection->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $connection->rollBack();
-            throw new \Magento\Framework\Exception\CouldNotSaveException(
-                __('Could not save a shipment, see error log for details')
+            throw new CouldNotSaveException(
+                __('Could not save a shipment, see error log for details' . $e->getMessage())
             );
         }
 
@@ -116,11 +189,13 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
 
     /**
      * Add item to shipment
-     * @param $shipment
-     * @param $orderItem
-     * @param $items
-     * @param $countItems
+     *
+     * @param Shipment $shipment
+     * @param Item $orderItem
+     * @param array $items
+     * @param int $countItems
      * @return bool
+     * @throws LocalizedException
      */
     protected function _addToShip($shipment, $orderItem, $items, $countItems)
     {
@@ -147,15 +222,23 @@ class ShipOrder implements \Goeasyship\Shipping\Api\ShipOrderInterface
             return false;
         }
 
-        $qtyShipped = isset($countToShip) ? $countToShip : $orderItem->getQtyToShip();
+        $qtyShipped = $countToShip ?? $orderItem->getQtyToShip();
 
         // Create shipment item with qty
         $shipmentItem = $this->_convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
 
         // Add shipment item to shipment
         $shipment->addItem($shipmentItem);
+
+        return true;
     }
 
+    /**
+     * Validate track data
+     *
+     * @param array $trackData
+     * @return array
+     */
     protected function validateTrackData($trackData)
     {
         if (isset($trackData['tracking_number'])) {
