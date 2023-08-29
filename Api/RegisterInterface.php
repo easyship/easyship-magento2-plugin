@@ -15,7 +15,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -25,6 +25,7 @@ interface RegisterInterface
 {
     /**
      * Save Easyship token
+     *
      * @param string $store_id
      * @param string $token
      * @return mixed

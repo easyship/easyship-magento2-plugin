@@ -15,27 +15,52 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Block\Admin\Config;
 
-class Generate extends \Magento\Config\Block\System\Config\Form\Field
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
+class Generate extends Field
 {
-    protected $_template = 'Goeasyship_Shipping::system/config/generate.phtml';
-
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    /**
+     * Constructor
+     *
+     * @return void
+     */
+    protected function _construct()
     {
-        $html = '<td class="value">';
-        $html .= "<h3>" . __('Here are stores we found in your settings. Please select the store to integrate with Easyship.') . "</h3>";
-        $html .= $this->_getElementHtml($element);
-        $html .= '</td>';
-
-        return $this->_decorateRowHtml($element, $html);
+        parent::_construct();
+        $this->setTemplate('Goeasyship_Shipping::system/config/generate.phtml');
     }
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    /**
+     * Render block
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
+    public function render(AbstractElement $element)
+    {
+        $html = '<td class="value">';
+        $html .= "<h3>" . __('Here are stores we found in your settings.'
+                .' Please select the store to integrate with Easyship.') . "</h3>";
+        $html .= $this->getElementHtml($element);
+        $html .= '</td>';
+
+            return $this->_decorateRowHtml($element, $html);
+    }
+
+    /**
+     * Get element html for EasyShip register
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
+    protected function getElementHtml(AbstractElement $element)
     {
         $id = $element->getStoreid();
         $isActived = $this->_scopeConfig->getValue('easyship_options/ec_shipping/token', 'default', $id);

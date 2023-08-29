@@ -14,7 +14,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -26,7 +26,7 @@ define([
 ], function ($, utils, validationRules, $t) {
     'use strict';
 
-    var checkoutConfig = window.checkoutConfig;
+    let checkoutConfig = window.checkoutConfig;
 
     return {
         validationErrors: [],
@@ -36,11 +36,11 @@ define([
          * @return {Boolean}
          */
         validate: function (address) {
-            var rules = validationRules.getRules(),
+            let rules = validationRules.getRules(),
                 self = this;
 
             $.each(rules, function (field, rule) {
-                var message;
+                let message;
 
                 if (rule.required && utils.isEmpty(address[field])) {
                     message = $t('Field ') + field + $t(' is required.');
@@ -49,7 +49,7 @@ define([
             });
 
             if (!this.validationErrors.length) {
-                if (address['country_id'] == checkoutConfig.originCountryCode) {
+                if (address['country_id'] === checkoutConfig.originCountryCode) {
                     return !utils.isEmpty(address.postcode);
                 }
 
