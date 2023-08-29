@@ -15,8 +15,12 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/**
+ * @var \Goeasyship\Shipping\Block\Admin\Config\Generate $block
  */
 ?>
 <div id="easyship_<?php echo $block->getElementId() ?>">
@@ -67,7 +71,7 @@
                                 message: $.mage.__(response.error),
 
                                 insertMethod: function (message) {
-                                    var $wrapper = $('<div/>').html(message);
+                                    let $wrapper = $('<div/>').html(message);
 
                                     $('.page-main-actions').after($wrapper);
                                 }

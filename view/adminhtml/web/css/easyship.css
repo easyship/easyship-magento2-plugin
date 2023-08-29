@@ -14,7 +14,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -67,14 +67,14 @@ div[id^=easyship] .statuscontainer {
 div[id^=easyship] .storename {
     font-size: 14px;
     color: #837676;
-    margin: 5px 0px;
+    margin: 5px 0;
 
 }
 
 div[id^=easyship] .statusLabel {
     font-size: 12px;
     color: #837676;
-    margin: 5px 0px;
+    margin: 5px 0;
 }
 
 div[id^=easyship] .buttoncontainer {

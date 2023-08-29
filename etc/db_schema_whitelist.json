@@ -1,0 +1,7 @@
+{
+    "sales_shipment_track": {
+        "column": {
+            "tracking_page_url": true
+        }
+    }
+}
