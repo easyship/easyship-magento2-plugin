@@ -15,7 +15,7 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -111,7 +111,7 @@ $number = is_object($track) ? $track->getTracking() : $track['number'];
             <th class="col label" scope="row">
                 <?= ($track['title'] ? $block->escapeHtml($track['title']) : $block->escapeHtml(__('N/A'))) ?>:
             </th>
-            <td class="col value"><?= (isset($track['number']) ? $block->escapeHtml($track['number']) : '') ?></td>
+            <td class="col value"><?= $block->escapeHtml($track['number']) ?></td>
         </tr>
     <?php endif; ?>
     </tbody>

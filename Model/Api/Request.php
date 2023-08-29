@@ -15,109 +15,161 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model\Api;
 
+use Goeasyship\Shipping\Model\Logger\Logger;
+use Laminas\Http\Client;
+use Laminas\Http\Headers;
+use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+
 class Request
 {
 
-    const BASE_ENDPOINT = 'https://api.easyship.com/';
+    public const BASE_ENDPOINT = 'https://api.easyship.com/';
 
-    const BASE_SETTINGS_PATH = 'easyship_options/ec_shipping/';
+    public const BASE_SETTINGS_PATH = 'easyship_options/ec_shipping/';
+    /**
+     * @var Headers
+     */
+    protected Headers $headers;
+    /**
+     * @var Client
+     */
+    protected Client $client;
+    /**
+     * @var \Laminas\Http\Request
+     */
+    protected \Laminas\Http\Request $request;
 
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $_scopeConfig;
 
+    /**
+     * @var Config
+     */
     protected $_config;
 
+    /**
+     * @var StoreManagerInterface
+     */
     protected $_storeManager;
 
+    /**
+     * @var ?string
+     */
     protected $_token;
 
+    /**
+     * @var Logger
+     */
     protected $logger;
 
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $config
+     * @param StoreManagerInterface $storeManager
+     * @param Logger $logger
+     * @param \Laminas\Http\Request $request
+     * @param Client $client
+     * @param Headers $headers
+     */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Config\Model\ResourceModel\Config $config,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Goeasyship\Shipping\Model\Logger\Logger $logger
+        ScopeConfigInterface $scopeConfig,
+        Config $config,
+        StoreManagerInterface $storeManager,
+        Logger $logger,
+        \Laminas\Http\Request                              $request,
+        Client $client,
+        Headers $headers
     ) {
         $this->_scopeConfig = $scopeConfig;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->logger = $logger;
+        $this->request = $request;
+        $this->client = $client;
+        $this->headers = $headers;
     }
 
     /**
      * Registration app
-     * @param $requestBody
+     *
+     * @param array $requestBody
      * @return bool|mixed
      */
     public function registrationsRequest($requestBody)
     {
         $endpoint = self::BASE_ENDPOINT . 'api/v1/magento/registrations';
 
-        $result = $this->_doRequest($endpoint, $requestBody, null, false, 'POST');
-
-        return $result;
+        return $this->_doRequest($endpoint, $requestBody, [], false);
     }
 
     /**
      * Return rates
-     * @param $requestBody
+     *
+     * @param DataObject $requestBody
      * @return bool|mixed
      */
     public function getQuotes($requestBody)
     {
         $endpoint = self::BASE_ENDPOINT . 'rate/v1/magento';
-        $result = $this->_doRequest($endpoint, $requestBody->getData(), null, true);
-        return $result;
+        return $this->_doRequest($endpoint, $requestBody->getData());
     }
 
     /**
+     * Do request to endpoint
+     *
      * @param string $endpoint
      * @param array $requestBody
-     * @param null $headers
+     * @param array $headers
      * @param bool $isAuth
      * @param string $method
      * @return bool|mixed
      */
-    protected function _doRequest($endpoint, array $requestBody, $headers = null, $isAuth = true, $method = 'POST')
+    protected function _doRequest($endpoint, array $requestBody, $headers = [], $isAuth = true, $method = 'POST')
     {
-        $client = new \Zend_Http_Client($endpoint);
-        $client->setMethod($method);
+        $request = $this->request;
+        $request->setUri($endpoint);
+        $request->setMethod($method);
+        if (empty($headers)) {
+            $headers['Content-Type'] = 'application/json';
+        }
 
         if ($isAuth) {
-            $client->setHeaders('Authorization', 'Bearer ' . $this->getToken());
+            $headers['Authorization'] = 'Bearer ' . $this->getToken();
         }
 
-        if (is_null($headers)) {
-            $client->setHeaders([
-                'Content-Type' => 'application/json'
-            ]);
-        } elseif (is_array($headers)) {
-            $client->setHeaders($headers);
-        }
+        $headers = $this->headers->addHeaders($headers);
+        $request->setHeaders($headers);
 
-        $client->setRawData(json_encode($requestBody), null);
+        $request->setContent(json_encode($requestBody));
 
-        $response = $client->request($method);
+        $response = $this->client->send($request);
 
-        if (empty($response) || !$response->isSuccessful()) {
-            $this->loggerRequest($endpoint, $response->getStatus());
+        if (empty($response) || !$response->isSuccess()) {
+            $this->loggerRequest($endpoint, $response->getStatusCode());
             return false;
         }
         $result = json_decode($response->getBody(), true);
 
-        $this->loggerRequest($endpoint, $response->getStatus(), $result);
+        $this->loggerRequest($endpoint, $response->getStatusCode(), $result);
 
         return $result;
     }
 
     /**
      * Get Token
+     *
      * @return string
      */
     protected function getToken()
@@ -125,7 +177,7 @@ class Request
         if (empty($this->_token)) {
             $this->_token = $this->_scopeConfig->getValue(
                 self::BASE_SETTINGS_PATH . 'token',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                ScopeInterface::SCOPE_STORE
             );
         }
 
@@ -134,17 +186,18 @@ class Request
 
     /**
      * Add line to log file
-     * @param $endpoint
-     * @param $status
-     * @param null $response
+     *
+     * @param string $endpoint
+     * @param string $status
+     * @param ?array $response
      */
     protected function loggerRequest($endpoint, $status, $response = null)
     {
         $this->logger->info($endpoint . " : " . $status);
-        if (is_array($response)) {
-            $this->logger->info(json_encode($response));
-        } elseif (!empty($response)) {
+        if (is_string($response)) {
             $this->logger->info($response);
+        } elseif (!empty($response)) {
+            $this->logger->info(json_encode($response));
         }
     }
 }

@@ -15,13 +15,16 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model\Logger;
 
-class Handler extends \Magento\Framework\Logger\Handler\Base
+use Magento\Framework\Logger\Handler\Base;
+use Monolog\Logger;
+
+class Handler extends Base
 {
     /**
      * Logging level
@@ -30,7 +33,8 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
     protected $loggerType = Logger::INFO;
 
     /**
-     * File name
+     * File name for logger
+     *
      * @var string
      */
     protected $fileName = '/var/log/easyship_api.log';

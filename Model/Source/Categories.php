@@ -15,16 +15,26 @@
  *
  * @category    Goeasyship
  * @package     Goeasyship_Shipping
- * @copyright   Copyright (c) 2018 Easyship (https://www.easyship.com/)
+ * @copyright   Copyright (c) 2022 Easyship (https://www.easyship.com/)
  * @license     https://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace Goeasyship\Shipping\Model\Source;
 
-class Categories extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
+use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
+
+class Categories extends AbstractSource
 {
+    /**
+     * @var ?array
+     */
     protected $_options;
 
+    /**
+     * Get all options for base categories
+     *
+     * @return array|array[]
+     */
     public function getAllOptions()
     {
         if ($this->_options === null) {
@@ -35,6 +45,7 @@ class Categories extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSour
 
     /**
      * Return base easyship categories
+     *
      * @see https://developers.easyship.com/reference#request-rates-and-taxes
      * @return array
      */
