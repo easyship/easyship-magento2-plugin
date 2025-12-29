@@ -157,7 +157,8 @@ class Request
         $response = $this->client->send($request);
 
         if (empty($response) || !$response->isSuccess()) {
-            $this->loggerRequest($endpoint, $response->getStatusCode());
+            $statusCode = empty($response) ? 0 : $response->getStatusCode();
+            $this->loggerRequest($endpoint, $statusCode);
             return false;
         }
         $result = json_decode($response->getBody(), true);
