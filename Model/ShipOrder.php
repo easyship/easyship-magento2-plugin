@@ -33,6 +33,7 @@ use Magento\Sales\Model\Order\Config as OrderConfig;
 use Magento\Sales\Model\Order\Item;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Shipment\Track;
+use Magento\Sales\Model\Order\Shipment\TrackFactory;
 use Magento\Sales\Model\Order\ShipmentFactory;
 use Magento\Sales\Model\Order\ShipmentRepository;
 use Magento\Sales\Model\OrderRepository;
@@ -83,9 +84,9 @@ class ShipOrder implements ShipOrderInterface
     protected $_shipmentNotifier;
 
     /**
-     * @var Track
+     * @var TrackFactory
      */
-    protected $_track;
+    protected $_trackFactory;
 
     /**
      * @param ResourceConnection $resourceConnection
@@ -96,7 +97,7 @@ class ShipOrder implements ShipOrderInterface
      * @param ShipmentNotifier $shipmentNotifier
      * @param \Magento\Sales\Model\Order $order
      * @param ShipmentFactory $shipmentFactory
-     * @param Track $track
+     * @param TrackFactory $trackFactory
      */
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -107,7 +108,7 @@ class ShipOrder implements ShipOrderInterface
         ShipmentNotifier $shipmentNotifier,
         \Magento\Sales\Model\Order $order,
         ShipmentFactory $shipmentFactory,
-        Track $track
+        TrackFactory $trackFactory
     ) {
 
         $this->_resourceConnection = $resourceConnection;
@@ -118,7 +119,7 @@ class ShipOrder implements ShipOrderInterface
         $this->_shipmentRepository = $shipmentRepository;
         $this->_shipmentNotifier = $shipmentNotifier;
         $this->_orderRepository = $orderRepository;
-        $this->_track = $track;
+        $this->_trackFactory = $trackFactory;
     }
 
     /**
@@ -156,8 +157,9 @@ class ShipOrder implements ShipOrderInterface
         $trackData = $this->validateTrackData($trackData);
 
         if (!empty($trackData)) {
-            $this->_track->addData($trackData);
-            $shipment->addTrack($this->_track);
+            $track = $this->_trackFactory->create();
+            $track->addData($trackData);
+            $shipment->addTrack($track);
         }
 
         if (!empty($comment)) {
