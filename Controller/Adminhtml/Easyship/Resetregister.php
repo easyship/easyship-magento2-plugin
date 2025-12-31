@@ -21,7 +21,6 @@
 
 namespace Goeasyship\Shipping\Controller\Adminhtml\Easyship;
 
-use Braintree\Exception;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Config\Model\ResourceModel\Config;
@@ -65,7 +64,7 @@ class Resetregister extends Action
             $this->_config->deleteConfig('easyship_options/ec_shipping/token', 'default', $storeId);
             $this->_cacheTypeList->cleanType('config');
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->getResponse()->setBody(json_encode([]));

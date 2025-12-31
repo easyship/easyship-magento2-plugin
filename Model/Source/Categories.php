@@ -35,7 +35,7 @@ class Categories extends AbstractSource
      *
      * @return array|array[]
      */
-    public function getAllOptions()
+    public function getAllOptions(): array
     {
         if ($this->_options === null) {
             $this->_options = $this->getBaseCategories();
@@ -49,7 +49,7 @@ class Categories extends AbstractSource
      * @see https://developers.easyship.com/reference#request-rates-and-taxes
      * @return array
      */
-    protected function getBaseCategories()
+    protected function getBaseCategories(): array
     {
         return [
             ['value' => 'mobiles', 'label' => __('Mobiles')],
