@@ -201,18 +201,22 @@ class ShipOrder implements ShipOrderInterface
      */
     protected function _addToShip($shipment, $orderItem, $items, $countItems)
     {
-        $needToShip = true;
-        //Check need to ship
+        $needToShip = false;
+        $countToShip = null;
+
+        // Check need to ship
         if (is_array($items) && $countItems) {
+            // If items array is provided, only ship items that match
             foreach ($items as $item) {
                 if (isset($item['item_id']) && ($item['item_id'] == $orderItem->getId())) {
                     $needToShip = true;
                     $countToShip = $item['qty'];
                     break;
-                } else {
-                    $needToShip = false;
                 }
             }
+        } else {
+            // If no items array provided, ship all items
+            $needToShip = true;
         }
 
         if (!$needToShip) {
