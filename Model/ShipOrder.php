@@ -31,6 +31,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Convert\Order;
 use Magento\Sales\Model\Order\Config as OrderConfig;
 use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Api\Data\ShipmentExtensionFactory;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Shipment\Track;
 use Magento\Sales\Model\Order\Shipment\TrackFactory;
@@ -89,6 +90,11 @@ class ShipOrder implements ShipOrderInterface
     protected $_trackFactory;
 
     /**
+     * @var ShipmentExtensionFactory
+     */
+    protected $_shipmentExtensionFactory;
+
+    /**
      * @param ResourceConnection $resourceConnection
      * @param OrderConfig $config
      * @param Order $convertOrder
@@ -98,6 +104,7 @@ class ShipOrder implements ShipOrderInterface
      * @param \Magento\Sales\Model\Order $order
      * @param ShipmentFactory $shipmentFactory
      * @param TrackFactory $trackFactory
+     * @param ShipmentExtensionFactory $shipmentExtensionFactory
      */
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -108,7 +115,8 @@ class ShipOrder implements ShipOrderInterface
         ShipmentNotifier $shipmentNotifier,
         \Magento\Sales\Model\Order $order,
         ShipmentFactory $shipmentFactory,
-        TrackFactory $trackFactory
+        TrackFactory $trackFactory,
+        ShipmentExtensionFactory $shipmentExtensionFactory
     ) {
 
         $this->_resourceConnection = $resourceConnection;
@@ -120,6 +128,7 @@ class ShipOrder implements ShipOrderInterface
         $this->_shipmentNotifier = $shipmentNotifier;
         $this->_orderRepository = $orderRepository;
         $this->_trackFactory = $trackFactory;
+        $this->_shipmentExtensionFactory = $shipmentExtensionFactory;
     }
 
     /**
@@ -167,7 +176,14 @@ class ShipOrder implements ShipOrderInterface
         }
 
         $shipment->setShipmentStatus(Shipment::STATUS_NEW);
-        $shipment->getExtensionAttributes()->setSourceCode('default');
+
+        // Ensure extension attributes are initialized before setting source code
+        $extensionAttributes = $shipment->getExtensionAttributes();
+        if ($extensionAttributes === null) {
+            $extensionAttributes = $this->_shipmentExtensionFactory->create();
+            $shipment->setExtensionAttributes($extensionAttributes);
+        }
+        $extensionAttributes->setSourceCode('default');
 
         $shipment->register();
 
