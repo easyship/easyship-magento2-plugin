@@ -107,7 +107,7 @@ class Request
      * @param array $requestBody
      * @return bool|mixed
      */
-    public function registrationsRequest($requestBody)
+    public function registrationsRequest($requestBody): bool|array
     {
         $endpoint = self::BASE_ENDPOINT . 'api/v1/magento/registrations';
 
@@ -120,7 +120,7 @@ class Request
      * @param DataObject $requestBody
      * @return bool|mixed
      */
-    public function getQuotes($requestBody)
+    public function getQuotes($requestBody): bool|array
     {
         $endpoint = self::BASE_ENDPOINT . 'rate/v1/magento';
         return $this->_doRequest($endpoint, $requestBody->getData());
@@ -136,7 +136,7 @@ class Request
      * @param string $method
      * @return bool|mixed
      */
-    protected function _doRequest($endpoint, array $requestBody, $headers = [], $isAuth = true, $method = 'POST')
+    protected function _doRequest($endpoint, array $requestBody, $headers = [], $isAuth = true, $method = 'POST'): bool|array
     {
         $request = $this->request;
         $request->setUri($endpoint);
@@ -192,7 +192,7 @@ class Request
      * @param string $status
      * @param ?array $response
      */
-    protected function loggerRequest($endpoint, $status, $response = null)
+    protected function loggerRequest($endpoint, $status, $response = null): void
     {
         $this->logger->info($endpoint . " : " . $status);
         if (is_string($response)) {

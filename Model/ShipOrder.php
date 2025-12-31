@@ -149,7 +149,7 @@ class ShipOrder implements ShipOrderInterface
         $items = [],
         $trackData = [],
         $comment = ''
-    ) {
+    ): bool|string {
 
         $order = $this->_orderRepository->get($orderId);
 
@@ -215,7 +215,7 @@ class ShipOrder implements ShipOrderInterface
      * @return bool
      * @throws LocalizedException
      */
-    protected function _addToShip($shipment, $orderItem, $items, $countItems)
+    protected function _addToShip($shipment, $orderItem, $items, $countItems): bool
     {
         $needToShip = false;
         $countToShip = null;
@@ -261,7 +261,7 @@ class ShipOrder implements ShipOrderInterface
      * @param array $trackData
      * @return array
      */
-    protected function validateTrackData($trackData)
+    protected function validateTrackData($trackData): array
     {
         if (isset($trackData['tracking_number'])) {
             $trackData['number'] = $trackData['tracking_number'];
