@@ -171,9 +171,9 @@ class Request
     /**
      * Get Token
      *
-     * @return string
+     * @return ?string
      */
-    protected function getToken()
+    protected function getToken(): ?string
     {
         if (empty($this->_token)) {
             $this->_token = $this->_scopeConfig->getValue(
