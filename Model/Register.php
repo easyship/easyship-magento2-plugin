@@ -57,7 +57,7 @@ class Register implements RegisterInterface
      * @param string $token
      * @return false|void
      */
-    public function saveToken($storeId, $token)
+    public function saveToken($storeId, $token): false|void
     {
         if (!$storeId) {
             return false;

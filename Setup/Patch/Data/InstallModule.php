@@ -43,7 +43,6 @@ class InstallModule implements DataPatchInterface
             'apply_to' => ''
         ],
         'easyship_width' => [
-            [
                 'type' => 'int',
                 'backend' => '',
                 'frontend' => '',
@@ -63,7 +62,6 @@ class InstallModule implements DataPatchInterface
                 'used_in_product_listing' => true,
                 'unique' => false,
                 'apply_to' => ''
-            ]
         ],
         'easyship_length' => [
             'type' => 'int',
@@ -87,7 +85,6 @@ class InstallModule implements DataPatchInterface
             'apply_to' => ''
         ],
         'easyship_category' => [
-            [
                 'type' => 'text',
                 'backend' => ArrayBackend::class,
                 'frontend' => '',
@@ -107,7 +104,6 @@ class InstallModule implements DataPatchInterface
                 'used_in_product_listing' => true,
                 'unique' => false,
                 'apply_to' => ''
-            ]
         ]
     ];
 
