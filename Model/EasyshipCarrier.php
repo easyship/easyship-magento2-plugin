@@ -158,7 +158,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      *
      * @return null
      */
-    public function getAllowedMethods()
+    public function getAllowedMethods(): ?array
     {
         return null;
     }
@@ -168,7 +168,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      *
      * @return bool
      */
-    public function isTrackingAvailable()
+    public function isTrackingAvailable(): bool
     {
         return true;
     }
@@ -179,7 +179,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @param string $tracking
      * @return bool
      */
-    public function getTrackingInfo($tracking)
+    public function getTrackingInfo($tracking): bool|\Magento\Shipping\Model\Tracking\Result\Status|string
     {
         $result = $this->getTracking($tracking);
 
@@ -201,7 +201,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @param string $trackings
      * @return mixed
      */
-    public function getTracking($trackings)
+    public function getTracking($trackings): \Magento\Shipping\Model\Tracking\Result
     {
         if (!is_array($trackings)) {
             $trackings = [$trackings];
@@ -231,7 +231,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return bool|Result
      * @throws NoSuchEntityException
      */
-    public function collectRates(RateRequest $request)
+    public function collectRates(RateRequest $request): bool|Result
     {
         if (!$this->getConfigFlag('active')) {
             return false;
@@ -248,7 +248,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @param array $trackings
      * @return array
      */
-    protected function findByNumber(array $trackings)
+    protected function findByNumber(array $trackings): array
     {
         $elements = $this->_trackCollectionFactory->create()->addFieldToFilter('track_number', ['in' => $trackings]);
         $result = [];
@@ -265,7 +265,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return void
      * @throws NoSuchEntityException
      */
-    protected function _createEasyShipRequest(RateRequest $request)
+    protected function _createEasyShipRequest(RateRequest $request): void
     {
         $this->_request = $request;
 
@@ -352,7 +352,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return int
      * @throws NoSuchEntityException
      */
-    protected function getStoreId()
+    protected function getStoreId(): int
     {
         if (empty($this->storeId)) {
             $this->storeId = $this->_storeManager->getStore()->getId();
@@ -367,7 +367,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @param AbstractItem $item
      * @return int
      */
-    protected function getWeight($item)
+    protected function getWeight($item): int
     {
         if ($item->hasWeight() && !empty($item->getWeight())) {
             return (int)$item->getWeight();
@@ -383,7 +383,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return string
      * @throws NoSuchEntityException
      */
-    protected function getEasyshipCategory($item)
+    protected function getEasyshipCategory($item): string
     {
         if ($item->hasEasyshipCategory() && !empty($item->getEasyshipCategory())) {
             return $item->getEasyshipCategory();
@@ -409,7 +409,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return int
      * @throws NoSuchEntityException
      */
-    protected function getEasyshipHeight($item)
+    protected function getEasyshipHeight($item): int
     {
         if ($item->hasEasyshipHeight() && !empty($item->getEasyshipHeight())) {
             return (int)$item->getEasyshipHeight();
@@ -435,7 +435,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return int
      * @throws NoSuchEntityException
      */
-    protected function getEasyshipWidth($item)
+    protected function getEasyshipWidth($item): int
     {
         if ($item->hasEasyshipWidth() && !empty($item->getEasyshipWidth())) {
             return (int)$item->getEasyshipWidth();
@@ -461,7 +461,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return int
      * @throws NoSuchEntityException
      */
-    protected function getEasyshipLength($item)
+    protected function getEasyshipLength($item): int
     {
         if ($item->hasEasyshipLength() && !empty($item->getEasyshipLength())) {
             return (int)$item->getEasyshipLength();
@@ -486,7 +486,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @return bool|Result
      * @throws NoSuchEntityException
      */
-    protected function _getQuotes()
+    protected function _getQuotes(): bool|Result
     {
         $rates = $this->_easyshipApi->getQuotes($this->_rawRequest);
         if (empty($rates) || empty($rates['rates'])) {
@@ -525,7 +525,7 @@ class EasyshipCarrier extends AbstractCarrier implements CarrierInterface
      * @param DataObject $data
      * @param RateRequest $request
      */
-    protected function setAddressToRequest($data, $request)
+    protected function setAddressToRequest($data, $request): void
     {
         if ($request->getDestCity()) {
             $data->setDestinationCity(

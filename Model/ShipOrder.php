@@ -31,8 +31,10 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Convert\Order;
 use Magento\Sales\Model\Order\Config as OrderConfig;
 use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Api\Data\ShipmentExtensionFactory;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Shipment\Track;
+use Magento\Sales\Model\Order\Shipment\TrackFactory;
 use Magento\Sales\Model\Order\ShipmentFactory;
 use Magento\Sales\Model\Order\ShipmentRepository;
 use Magento\Sales\Model\OrderRepository;
@@ -83,9 +85,14 @@ class ShipOrder implements ShipOrderInterface
     protected $_shipmentNotifier;
 
     /**
-     * @var Track
+     * @var TrackFactory
      */
-    protected $_track;
+    protected $_trackFactory;
+
+    /**
+     * @var ShipmentExtensionFactory
+     */
+    protected $_shipmentExtensionFactory;
 
     /**
      * @param ResourceConnection $resourceConnection
@@ -96,7 +103,8 @@ class ShipOrder implements ShipOrderInterface
      * @param ShipmentNotifier $shipmentNotifier
      * @param \Magento\Sales\Model\Order $order
      * @param ShipmentFactory $shipmentFactory
-     * @param Track $track
+     * @param TrackFactory $trackFactory
+     * @param ShipmentExtensionFactory $shipmentExtensionFactory
      */
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -107,7 +115,8 @@ class ShipOrder implements ShipOrderInterface
         ShipmentNotifier $shipmentNotifier,
         \Magento\Sales\Model\Order $order,
         ShipmentFactory $shipmentFactory,
-        Track $track
+        TrackFactory $trackFactory,
+        ShipmentExtensionFactory $shipmentExtensionFactory
     ) {
 
         $this->_resourceConnection = $resourceConnection;
@@ -118,7 +127,8 @@ class ShipOrder implements ShipOrderInterface
         $this->_shipmentRepository = $shipmentRepository;
         $this->_shipmentNotifier = $shipmentNotifier;
         $this->_orderRepository = $orderRepository;
-        $this->_track = $track;
+        $this->_trackFactory = $trackFactory;
+        $this->_shipmentExtensionFactory = $shipmentExtensionFactory;
     }
 
     /**
@@ -139,7 +149,7 @@ class ShipOrder implements ShipOrderInterface
         $items = [],
         $trackData = [],
         $comment = ''
-    ) {
+    ): bool|string {
 
         $order = $this->_orderRepository->get($orderId);
 
@@ -156,8 +166,9 @@ class ShipOrder implements ShipOrderInterface
         $trackData = $this->validateTrackData($trackData);
 
         if (!empty($trackData)) {
-            $this->_track->addData($trackData);
-            $shipment->addTrack($this->_track);
+            $track = $this->_trackFactory->create();
+            $track->addData($trackData);
+            $shipment->addTrack($track);
         }
 
         if (!empty($comment)) {
@@ -165,7 +176,14 @@ class ShipOrder implements ShipOrderInterface
         }
 
         $shipment->setShipmentStatus(Shipment::STATUS_NEW);
-        $shipment->getExtensionAttributes()->setSourceCode('default');
+
+        // Ensure extension attributes are initialized before setting source code
+        $extensionAttributes = $shipment->getExtensionAttributes();
+        if ($extensionAttributes === null) {
+            $extensionAttributes = $this->_shipmentExtensionFactory->create();
+            $shipment->setExtensionAttributes($extensionAttributes);
+        }
+        $extensionAttributes->setSourceCode('default');
 
         $shipment->register();
 
@@ -197,20 +215,24 @@ class ShipOrder implements ShipOrderInterface
      * @return bool
      * @throws LocalizedException
      */
-    protected function _addToShip($shipment, $orderItem, $items, $countItems)
+    protected function _addToShip($shipment, $orderItem, $items, $countItems): bool
     {
-        $needToShip = true;
-        //Check need to ship
+        $needToShip = false;
+        $countToShip = null;
+
+        // Check need to ship
         if (is_array($items) && $countItems) {
+            // If items array is provided, only ship items that match
             foreach ($items as $item) {
                 if (isset($item['item_id']) && ($item['item_id'] == $orderItem->getId())) {
                     $needToShip = true;
                     $countToShip = $item['qty'];
                     break;
-                } else {
-                    $needToShip = false;
                 }
             }
+        } else {
+            // If no items array provided, ship all items
+            $needToShip = true;
         }
 
         if (!$needToShip) {
@@ -239,7 +261,7 @@ class ShipOrder implements ShipOrderInterface
      * @param array $trackData
      * @return array
      */
-    protected function validateTrackData($trackData)
+    protected function validateTrackData($trackData): array
     {
         if (isset($trackData['tracking_number'])) {
             $trackData['number'] = $trackData['tracking_number'];
