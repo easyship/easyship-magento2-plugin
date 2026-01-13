@@ -53,16 +53,39 @@ class Register implements RegisterInterface
     /**
      * Logic for save token
      *
-     * @param ?int $storeId
+     * @param string $store_id
      * @param string $token
      * @return false|void
      */
-    public function saveToken($storeId, $token): false|void
+    public function saveToken($store_id, $token): false|void
     {
-        if (!$storeId) {
-            return false;
+        try {
+            if (empty($store_id)) {
+                throw new \InvalidArgumentException('store_id is required');
+            }
+
+            if (empty($token)) {
+                throw new \InvalidArgumentException('token is required');
+            }
+
+            $store_id = (int)$store_id;
+            if ($store_id <= 0) {
+                throw new \InvalidArgumentException('Invalid store_id');
+            }
+
+            $this->_config->saveConfig(
+                'easyship_options/ec_shipping/token',
+                $token,
+                'default',
+                $store_id
+            );
+            $this->_cacheTypeList->cleanType('config');
+
+            return true;
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\CouldNotSaveException(
+                __('Could not save token: %1', $e->getMessage())
+            );
         }
-        $this->_config->saveConfig('easyship_options/ec_shipping/token', $token, 'default', $storeId);
-        $this->_cacheTypeList->cleanType('config');
     }
 }
