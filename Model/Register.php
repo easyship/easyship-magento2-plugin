@@ -75,10 +75,11 @@ class Register implements RegisterInterface
         }
 
         // Convert store_id to integer and validate
-        $storeId = (int)$store_id;
-        if ($storeId <= 0) {
+        $store_id_original = $store_id;
+        $store_id = (int)$store_id;
+        if ($store_id <= 0) {
             throw new InvalidArgumentException(
-                sprintf('Invalid store_id: %s. Store ID must be a positive integer.', $store_id)
+                sprintf('Invalid store_id: %s. Store ID must be a positive integer.', $store_id_original)
             );
         }
 
@@ -88,7 +89,7 @@ class Register implements RegisterInterface
                 'easyship_options/ec_shipping/token',
                 $token,
                 'default',
-                $storeId
+                $store_id
             );
 
             // Clear configuration cache to ensure changes take effect immediately
@@ -98,7 +99,7 @@ class Register implements RegisterInterface
         } catch (\Exception $e) {
             // Wrap exceptions in CouldNotSaveException for Magento API compatibility
             throw new CouldNotSaveException(
-                __('Could not save token for store %1: %2', $storeId, $e->getMessage())
+                __('Could not save token for store %1: %2', $store_id, $e->getMessage())
             );
         }
     }
