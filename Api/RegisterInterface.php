@@ -28,7 +28,7 @@ interface RegisterInterface
      *
      * @param string $store_id
      * @param string $token
-     * @return mixed
+     * @return bool
      */
-    public function saveToken($store_id, $token);
+    public function saveToken($store_id, $token): bool;
 }
